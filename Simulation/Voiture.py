@@ -1,34 +1,36 @@
 # coding: utf8
 
-from math import exp
+from etude_fonction_force import g
+
 
 class Voiture(object):
 
-    position = 0 # position en mètre
-    vitesse = 0 # vitesse en m/s
-
-    # Caractéristiques techniques
-    masse = 1300 # masse en kg
-    longueur = 4 # longueur en mètre
-    F_max = 3000 # Force d'accélération maximum
-    F_min = 3000 # Force de freinage maximum
-
     def __init__(self, position, vitesse):
+        assert position >= 0
+        assert vitesse >= 0
         # Vitesse et position initiales de la voiture
-        self.position = position
-        self.vitesse = vitesse
+        self.position = position # position en mètre
+        self.vitesse = vitesse # vitesse en m/s
 
-    def update(self, delta, voiture_derriere, voiture_devant, vitesse_limite, distance_securite):
+        self.donnees = []
+        self.masse = 1300 # masse en kg
+        self.longueur = 4 # longueur en mètre
+        self.F_max = 3000 # Force d'accélération maximum
+        self.F_min = 3000 # Force de freinage maximum
+
+    def update(self, temps_total, delta, voiture_derriere, voiture_devant, vitesse_limite, distance_securite):
         # Influence de la voiture de devant
-        if voiture_devant != None:
-            distance = abs(self.position - voiture_devant.position) # Distance avec la voiture de devant
-            delta_v = self.vitesse - voiture_devant.vitesse # Vitesse relative avec la voiture de devant
+        if voiture_devant is not None:
+            # Distance relative par rapport à la voiture de devant
+            delta_h = (voiture_devant.position - self.position) - distance_securite
+            # Vitesse relative avec la voiture de devant
+            delta_v = self.vitesse - voiture_devant.vitesse
         else:
-            distance = 1000000000
-            delta_v = -1000000000
+            delta_h = 10000
+            delta_v = 10000
 
         # Calcul de la force appliquée par le conducteur
-        F = self.F_max * (1 - exp(delta_v/vitesse_limite) * exp((distance_securite - distance) / distance_securite)) * (vitesse_limite - self.vitesse) / vitesse_limite
+        F = self.F_max * g(delta_v, delta_h) * (vitesse_limite - self.vitesse) / vitesse_limite
 
         F = min(F, self.F_max)
         F = max(F, -self.F_min)
@@ -40,10 +42,52 @@ class Voiture(object):
         self.vitesse += a * delta
         self.position += self.vitesse * delta
 
-        donnees = [
-            self.position,
-            self.vitesse,
-            F
-        ]
+        # Enregistrement des données
+        self.donnees.append([
+            temps_total,
+            [
+                self.position,
+                self.vitesse,
+                F
+            ]
+        ])
 
-        return donnees
+    def obtenir_positions(self):
+        t = []
+        r = []
+        for d in self.donnees:
+            t.append(d[0])
+            r.append(d[1][0])
+        return t, r
+
+    def obtenir_vitesses(self):
+        t = []
+        r = []
+        for d in self.donnees:
+            t.append(d[0])
+            r.append(d[1][1])
+        return t, r
+
+    def obtenir_forces(self):
+        t = []
+        r = []
+        for d in self.donnees:
+            t.append(d[0])
+            r.append(d[1][2])
+        return t, r
+
+    def definir_masse(self, masse):
+        assert masse > 0
+        self.masse = masse
+
+    def definir_longueur(self, longueur):
+        assert longueur > 0
+        self.longueur = longueur
+
+    def definir_force_acceleration(self, F_max):
+        assert F_max > 0
+        self.F_max = F_max
+
+    def definir_force_freinage(self, F_min):
+        assert F_min > 0
+        self.F_min = F_min
