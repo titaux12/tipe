@@ -40,6 +40,8 @@ class Voiture(object):
 
         # Intégration d'Euler
         self.vitesse += a * delta
+        if self.vitesse < 0:
+            self.vitesse = 0
         self.position += self.vitesse * delta
 
         # Enregistrement des données
