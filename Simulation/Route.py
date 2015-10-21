@@ -27,8 +27,8 @@ class Route(object):
         self.flux = []
         self.densite = []
 
-        self.ajouter_voiture(0, 0)
-        self.ajouter_voiture(10, 0)
+        self.ajouter_voiture(0, 36)
+        self.ajouter_voiture(10, 36)
 
     def update(self, delta, temps_total):
         for voiture in self.voitures:
@@ -84,6 +84,23 @@ class Route(object):
             return None
         X, Y = voiture.obtenir_forces()
         plot(X, Y, label="Voiture " + str(indice))
+
+    def afficher_distance(self, i1, i2):
+        try:
+            voiture1 = self.voitures[i1]
+            voiture2 = self.voitures[i2]
+        except:
+            print("Erreur ! Impossible de récupérer les voitures d'indices " + str(i1) + " et " + str(i2))
+            return None
+        X, Y1 = voiture1.obtenir_positions()
+        X, Y2 = voiture2.obtenir_positions()
+        Y = []
+        D = []
+        for i in range(len(Y1)):
+            Y.append(Y2[i] - Y1[i])
+            D.append(self.distance_securite)
+        plot(X, D, label="Distance de sécurité")
+        plot(X, Y, label="Distance entre les voitures " + str(i1) + " et " + str(i2))
 
     def afficher(self, xmin, xmax, ymin, ymax):
         xlim(xmin, xmax)
