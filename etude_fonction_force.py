@@ -17,7 +17,7 @@ def g(delta_v, delta_h):
     """
     c_v = (-np.arctan(delta_h/distance_securite + 1)/np.pi + 0.5) * 40
     c_h = (-np.arctan(delta_v/vitesse_limite)/np.pi + 0.5) * 10
-    r = (np.arctan(c_v*delta_v/vitesse_limite + c_h*(delta_h/distance_securite + 1))/np.pi + 0.5)*2 - 1
+    r = (np.arctan(c_v*(delta_v - 10)/vitesse_limite + c_h*(delta_h/distance_securite + 1))/np.pi + 0.5)*2 - 1
     return r
 
 def tracer(xmin, xmax, ymin, ymax):
