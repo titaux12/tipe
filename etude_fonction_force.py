@@ -15,7 +15,7 @@ def g(delta_v, delta_h):
     :param delta_h: distance relative par rapport à la distance de sécurité
     :return: la force résultante appliquée par le conducteur
     """
-    r = (np.arctan(10*(delta_h + 5*delta_v)/distance_securite)/np.pi + 0.5)*2 - 1
+    r = (np.arctan(3*(delta_h + 10*delta_v)/distance_securite)/np.pi + 0.5)*2 - 1
     return r
 
 def tracer(xmin, xmax, ymin, ymax):
@@ -42,4 +42,5 @@ def tracer(xmin, xmax, ymin, ymax):
 
     show()
 
-tracer(-vitesse_limite, vitesse_limite, -distance_securite, 500)
+if __name__ == '__main__':
+    tracer(-vitesse_limite, vitesse_limite, -distance_securite, 500)

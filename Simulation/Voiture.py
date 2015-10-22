@@ -24,16 +24,22 @@ class Voiture(object):
             # Distance relative par rapport à la voiture de devant
             delta_h = (voiture_devant.position - self.position) - distance_securite
             # Vitesse relative avec la voiture de devant
-            delta_v = self.vitesse - voiture_devant.vitesse
+            delta_v = voiture_devant.vitesse - self.vitesse
         else:
             delta_h = 10000
             delta_v = 10000
 
         # Calcul de la force appliquée par le conducteur
         G = g(delta_v, delta_h)
+
+        if G > 0:
+            G *= self.F_max
+        else:
+            G *= self.F_min
+
         n = self.F_max / vitesse_limite
 
-        F = self.F_max * G - n * self.vitesse
+        F = G - n * self.vitesse
 
         F = min(F, self.F_max)
         F = max(F, -self.F_min)

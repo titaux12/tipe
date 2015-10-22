@@ -28,7 +28,9 @@ class Route(object):
         self.densite = []
 
         self.ajouter_voiture(0, 36)
-        self.ajouter_voiture(10, 36)
+        self.ajouter_voiture(100, 36)
+        self.ajouter_voiture(200, 36)
+        self.ajouter_voiture(400, 0)
 
     def update(self, delta, temps_total):
         for voiture in self.voitures:
@@ -65,7 +67,7 @@ class Route(object):
             print("Erreur ! Impossible de récupérer la voiture d'indice " + str(indice))
             return None
         X, Y = voiture.obtenir_positions()
-        plot(X, Y, label="Voiture " + str(indice))
+        plot(Y, X, label="Voiture " + str(indice))
 
     def afficher_vitesse(self, indice):
         try:
