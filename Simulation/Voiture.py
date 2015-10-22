@@ -15,53 +15,57 @@ class Voiture(object):
         self.donnees = []
         self.masse = 1300 # masse en kg
         self.longueur = 4 # longueur en mètre
-        self.F_max = 3000 # Force d'accélération maximum
-        self.F_min = 3000 # Force de freinage maximum
+        self.F_max = 6000 # Force d'accélération maximum
+        self.F_min = 6000 # Force de freinage maximum
+        self.valide = True # False si la voiture est arrivée à la fin de la route
 
-    def update(self, temps_total, delta, voiture_derriere, voiture_devant, vitesse_limite, distance_securite):
-        # Influence de la voiture de devant
-        if voiture_devant is not None:
-            # Distance relative par rapport à la voiture de devant
-            delta_h = (voiture_devant.position - self.position) - distance_securite
-            # Vitesse relative avec la voiture de devant
-            delta_v = voiture_devant.vitesse - self.vitesse
+    def update(self, temps_total, delta, voiture_derriere, voiture_devant, vitesse_limite, distance_securite, longueur):
+        if self.position >= longueur:
+            self.valide = False
         else:
-            delta_h = 10000
-            delta_v = 10000
+            # Influence de la voiture de devant
+            if voiture_devant is not None:
+                # Distance relative par rapport à la voiture de devant
+                delta_h = (voiture_devant.position - self.position) - distance_securite
+                # Vitesse relative avec la voiture de devant
+                delta_v = voiture_devant.vitesse - self.vitesse
+            else:
+                delta_h = 10000
+                delta_v = 10000
 
-        # Calcul de la force appliquée par le conducteur
-        G = g(delta_v, delta_h)
+            # Calcul de la force appliquée par le conducteur
+            G = g(delta_v, delta_h)
 
-        if G > 0:
-            G *= self.F_max
-        else:
-            G *= self.F_min
+            if G > 0:
+                G *= self.F_max
+            else:
+                G *= self.F_min
 
-        n = self.F_max / vitesse_limite
+            n = self.F_max / vitesse_limite
 
-        F = G - n * self.vitesse
+            F = G - n * self.vitesse
 
-        F = min(F, self.F_max)
-        F = max(F, -self.F_min)
+            F = min(F, self.F_max)
+            F = max(F, -self.F_min)
 
-        # Calcul de l'accélération via le PFD
-        a = F / self.masse
+            # Calcul de l'accélération via le PFD
+            a = F / self.masse
 
-        # Intégration d'Euler
-        self.vitesse += a * delta
-        if self.vitesse < 0:
-            self.vitesse = 0
-        self.position += self.vitesse * delta
+            # Intégration d'Euler
+            self.vitesse += a * delta
+            if self.vitesse < 0:
+                self.vitesse = 0
+            self.position += self.vitesse * delta
 
-        # Enregistrement des données
-        self.donnees.append([
-            temps_total,
-            [
-                self.position,
-                self.vitesse,
-                F
-            ]
-        ])
+            # Enregistrement des données
+            self.donnees.append([
+                temps_total,
+                [
+                    self.position,
+                    self.vitesse,
+                    F
+                ]
+            ])
 
     def obtenir_positions(self):
         t = []
