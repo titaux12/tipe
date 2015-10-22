@@ -30,7 +30,10 @@ class Voiture(object):
             delta_v = 10000
 
         # Calcul de la force appliquée par le conducteur
-        F = self.F_max * g(delta_v, delta_h) * (vitesse_limite - self.vitesse) / vitesse_limite
+        G = g(delta_v, delta_h)
+        n = self.F_max / vitesse_limite
+
+        F = self.F_max * G - n * self.vitesse
 
         F = min(F, self.F_max)
         F = max(F, -self.F_min)
