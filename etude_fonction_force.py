@@ -8,6 +8,7 @@ vitesse_limite = 36
 distance_securite = 2 * vitesse_limite
 vitesse_caracteristique = vitesse_limite
 
+
 def g(delta_v, delta_h):
     """
     Etude de la fonction qui permet de déterminer la force appliquée par le conducteur en fonction des différents paramètres
@@ -15,17 +16,67 @@ def g(delta_v, delta_h):
     :param delta_h: distance relative par rapport à la distance de sécurité
     :return: la force résultante appliquée par le conducteur
     """
-    r = (np.arctan(1*(delta_h + 15*delta_v)/distance_securite)/np.pi + 0.5)*2 - 1
-    return r
+
+    if delta_v >= 10:
+        if delta_h >= 0:
+            return 1
+        else:
+            return 0
+    elif delta_v >= 5:
+        if delta_h >= 0:
+            return 1
+        else:
+            return -0.5
+    elif delta_v >= -15:
+        if delta_h >= 100:
+            return 1
+        elif delta_h >= 0:
+            return 0
+        else:
+            return -1
+    elif delta_v >= -25:
+        if delta_h >= 250:
+            return 1
+        elif delta_h >= 100:
+            return 0
+        else:
+            return -1
+    else:
+        if delta_h >= 500:
+            return 1
+        elif delta_h >= 200:
+            return 0
+        else:
+            return -1
+
+def G(delta_v, delta_h):
+    """
+    Etude de la fonction qui permet de déterminer la force appliquée par le conducteur en fonction des différents paramètres
+    :param delta_v: vitesse relative par rapport à la voiture de devant
+    :param delta_h: distance relative par rapport à la distance de sécurité
+    :return: la force résultante appliquée par le conducteur
+    """
+    V = delta_v.tolist()[0]
+    D = delta_h.tolist()
+    R = []
+    for d in D:
+        d = d[0]
+        R_temp = []
+        for v in V:
+            R_temp.append(g(v, d))
+        R.append(R_temp)
+    return R
 
 def tracer(xmin, xmax, ymin, ymax):
     fig = figure()
     ax = fig.gca(projection='3d')
-    X = np.arange(xmin, xmax, 0.4)
-    Y = np.arange(ymin, ymax, 0.4)
+    X = np.arange(xmin, xmax+1, 1)
+    Y = np.arange(ymin, ymax+1, 1)
     X, Y = np.meshgrid(X, Y)
 
-    surf = ax.plot_surface(X, Y, g(X, Y), rstride=30, cstride=30, cmap=cm.coolwarm, linewidth=1)
+    Z = G(X, Y)
+
+    surf = ax.plot_surface(X, Y, Z, rstride=30, cstride=30, cmap=cm.coolwarm, linewidth=1)
 
     ax.zaxis.set_major_locator(LinearLocator(10))
     ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
@@ -43,4 +94,4 @@ def tracer(xmin, xmax, ymin, ymax):
     show()
 
 if __name__ == '__main__':
-    tracer(-vitesse_limite, vitesse_limite, -distance_securite, 500)
+    tracer(-vitesse_limite, vitesse_limite, -distance_securite, 700)

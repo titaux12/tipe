@@ -2,6 +2,7 @@
 
 from Voiture import *
 from pylab import *
+from matplotlib import animation
 
 
 class Route(object):
@@ -12,10 +13,11 @@ class Route(object):
     def __init__(self, longueur = 1000, vitesse_limite = 36):
         self.longueur = longueur # Longueur de la route en mètre
         self.vitesse_limite = vitesse_limite # Vitesse maximale autorisée en m/s
-        self.distance_securite = 2 * self.vitesse_limite # Distance mimimale entre deux voitures
 
+        self.voitures_valides = [] # Liste contenant les voitures valides
         self.voitures = [] # Liste contenant les voitures
-        self.N = 0 # Nombre de voitures sur la route
+        self.N_tot = 0 # Nombre de voitures sur la route
+        self.N = 0 # Nombre de voitures sur la route valides
 
         self.flux = []
         self.densite = []
@@ -24,43 +26,65 @@ class Route(object):
         self.temps_total = 0 # Temps total de la simulation
         self.pas = 50 # Pas de mesure pour le flux et la densité
         self.timer = 0
-        self.frequence = 1/4
+        self.frequence = 1
+        self.f_max = 50
+        self.f_min = 1/10
+        self.delta = 0
 
-    def initialisation(self):
-        self.distance_securite = 2 * self.vitesse_limite
-        self.voitures = [] # Liste contenant les voitures
-        self.N = 0 # Nombre de voitures sur la route
+    def initialisation(self, delta):
+        self.voitures_valides = []
+        self.voitures = []
+        self.N = 0
+        self.N_tot = 0
         self.flux = []
         self.densite = []
         self.temps_total = 0
+        self.delta = delta
 
-    def update(self, delta, temps_total):
-        self.timer += delta
-        if self.timer >= 1/self.frequence:
-            self.timer -= 1/self.frequence
-            self.ajouter_voiture(0, 36)
+        for k in range(self.longueur, 0, -100):
+            self.ajouter_voiture(k, 20 + uniform(0, 16))
+
+    def update(self, delta, temps_total, indice):
+        # self.timer += delta
+        # if self.timer >= 1/self.frequence:
+        #     if self.voitures_valides != []:
+        #         voiture_devant = self.voitures_valides[0]
+        #         if voiture_devant.position >= 2 * voiture_devant.vitesse + voiture_devant.longueur:
+        #             self.timer -= 1/self.frequence
+        #
+        #             self.frequence += 0.2
+        #
+        #             v = voiture_devant.vitesse
+        #             self.ajouter_voiture(0, v)
+        #         else:
+        #             self.timer -= delta
+        #     else:
+        #         self.ajouter_voiture(0, 36)
+        #         self.timer -= 1/self.frequence
 
         self.temps_total = temps_total
-        for voiture in self.voitures:
+        for voiture in self.voitures_valides:
             if voiture.valide:
-                i = self.voitures.index(voiture)
+                i = self.voitures_valides.index(voiture)
                 if i != 0:
-                    voiture_derriere = self.voitures[i-1]
+                    voiture_derriere = self.voitures_valides[i-1]
                 else:
                     voiture_derriere = None
                 if i != self.N-1:
-                    voiture_devant = self.voitures[i+1]
-                    if not voiture_devant.valide:
-                        voiture_devant = None
+                    voiture_devant = self.voitures_valides[i+1]
                 else:
                     voiture_devant = None
-                voiture.update(temps_total, delta, voiture_derriere, voiture_devant, self.vitesse_limite, self.distance_securite, self.longueur)
+                voiture.update(temps_total, delta, indice, voiture_derriere, voiture_devant, self.longueur)
+
+        for voiture in self.voitures_valides:
+            if not voiture.valide:
+                self.retirer_voiture(voiture)
 
         # Mise à jour du flux de voitures
         F = []
         for k in range(0, self.longueur, self.pas):
             v_totale = 0
-            for voiture in self.voitures:
+            for voiture in self.voitures_valides:
                 if voiture.position >= k and voiture.position < k + self.pas and voiture.valide:
                     v_totale += voiture.vitesse
             F.append(v_totale / self.pas)
@@ -71,7 +95,7 @@ class Route(object):
         ])
 
         v = 0
-        for voiture in self.voitures:
+        for voiture in self.voitures_valides:
             if voiture.valide:
                 v += voiture.vitesse
         self.flux_total.append([
@@ -83,7 +107,7 @@ class Route(object):
         D = []
         for k in range(0, self.longueur, self.pas):
             v_totale = 0
-            for voiture in self.voitures:
+            for voiture in self.voitures_valides:
                 if abs(voiture.position - k) < self.pas and voiture.valide:
                     v_totale += 1
             D.append(v_totale / self.pas)
@@ -93,22 +117,20 @@ class Route(object):
             D
         ])
 
-        N = 0
-        for voiture in self.voitures:
-            if voiture.valide:
-                N += 1
         self.densite_totale.append([
             temps_total,
-            N / self.longueur
+            self.N / self.longueur
         ])
 
-    def ajouter_voiture(self, position, vitesse):
-        voiture = Voiture(position, vitesse)
-        self.voitures.insert(0, voiture)
+    def ajouter_voiture(self, position, vitesse, index=0):
+        voiture = Voiture(position, vitesse, self.vitesse_limite)
+        self.voitures_valides.insert(index, voiture)
+        self.voitures.append(voiture)
         self.N += 1
+        self.N_tot += 1
 
     def retirer_voiture(self, voiture):
-        self.voitures.remove(voiture)
+        self.voitures_valides.remove(voiture)
         self.N -= 1
 
     def liste_vide(self, taille):
@@ -204,17 +226,17 @@ class Route(object):
 
     def analyse_voitures(self):
         print("Analyse des positions...")
-        for i in range(self.N):
+        for i in range(self.N_tot):
             self.afficher_position(i)
         self.afficher(0, self.longueur, 0, self.temps_total)
 
         print("Analyse des vitesses...")
-        for i in range(self.N):
+        for i in range(self.N_tot):
             self.afficher_vitesse(i)
         self.afficher(0, self.temps_total, 0, 40)
 
         print("Analyse des forces...")
-        for i in range(self.N):
+        for i in range(self.N_tot):
             self.afficher_force(i)
         self.afficher(0, self.temps_total, -6100, 6100)
 
@@ -227,3 +249,34 @@ class Route(object):
 
         print("Génération de la courbe flux-densité...")
         self.afficher_flux_densite()
+
+    def animation(self):
+
+        positions = []
+        for voiture in self.voitures:
+            positions.append(voiture.obtenir_positions(temps=False))
+
+        fig = figure()
+        data, = plot([], [], 'bo')
+        xlim(0, self.longueur)
+        ylim(0, 1)
+        N = round(self.temps_total / self.delta)
+
+        def update(k):
+            X = []
+            Y = []
+            for voiture in positions:
+                try:
+                    i = voiture[0].index(k)
+                    position = voiture[1][i]
+                    X.append(position)
+                    Y.append(0.5)
+                except:
+                    pass
+            data.set_data(X, Y)
+            title("Temps : " + str(round(self.delta * k)) + "s")
+            return data
+
+        animation.FuncAnimation(fig, update, frames=N, interval=self.delta/1000, repeat=False)
+        legend()
+        show()
