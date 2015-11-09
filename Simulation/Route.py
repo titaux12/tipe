@@ -10,7 +10,7 @@ class Route(object):
     Classe repésentant une route à plusieurs voies de circulation.
     """
 
-    def __init__(self, longueur = 1000, vitesse_limite = 36):
+    def __init__(self, longueur = 3000, vitesse_limite = 36):
         self.longueur = longueur # Longueur de la route en mètre
         self.vitesse_limite = vitesse_limite # Vitesse maximale autorisée en m/s
 
@@ -41,26 +41,23 @@ class Route(object):
         self.temps_total = 0
         self.delta = delta
 
-        for k in range(self.longueur, 0, -100):
-            self.ajouter_voiture(k, 20 + uniform(0, 16))
-
     def update(self, delta, temps_total, indice):
-        # self.timer += delta
-        # if self.timer >= 1/self.frequence:
-        #     if self.voitures_valides != []:
-        #         voiture_devant = self.voitures_valides[0]
-        #         if voiture_devant.position >= 2 * voiture_devant.vitesse + voiture_devant.longueur:
-        #             self.timer -= 1/self.frequence
-        #
-        #             self.frequence += 0.2
-        #
-        #             v = voiture_devant.vitesse
-        #             self.ajouter_voiture(0, v)
-        #         else:
-        #             self.timer -= delta
-        #     else:
-        #         self.ajouter_voiture(0, 36)
-        #         self.timer -= 1/self.frequence
+        self.timer += delta
+        if self.timer >= 1/self.frequence and temps_total <= 86:
+            if self.voitures_valides != []:
+                voiture_devant = self.voitures_valides[0]
+                if voiture_devant.position >= 2 * voiture_devant.vitesse + voiture_devant.longueur:
+                    self.timer -= 1/self.frequence
+
+                    self.frequence += 0.2
+
+                    v = voiture_devant.vitesse
+                    self.ajouter_voiture(0, v)
+                else:
+                    self.timer -= delta
+            else:
+                self.ajouter_voiture(0, 36)
+                self.timer -= 1/self.frequence
 
         self.temps_total = temps_total
         for voiture in self.voitures_valides:
@@ -73,7 +70,7 @@ class Route(object):
                 if i != self.N-1:
                     voiture_devant = self.voitures_valides[i+1]
                 else:
-                    voiture_devant = None
+                    voiture_devant = self.voitures_valides[0]
                 voiture.update(temps_total, delta, indice, voiture_derriere, voiture_devant, self.longueur)
 
         for voiture in self.voitures_valides:

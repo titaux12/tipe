@@ -17,37 +17,10 @@ def g(delta_v, delta_h):
     :return: la force résultante appliquée par le conducteur
     """
 
-    if delta_v >= 10:
-        if delta_h >= 0:
-            return 1
-        else:
-            return 0
-    elif delta_v >= 5:
-        if delta_h >= 0:
-            return 1
-        else:
-            return -0.5
-    elif delta_v >= -15:
-        if delta_h >= 100:
-            return 1
-        elif delta_h >= 0:
-            return 0
-        else:
-            return -1
-    elif delta_v >= -25:
-        if delta_h >= 250:
-            return 1
-        elif delta_h >= 100:
-            return 0
-        else:
-            return -1
+    if delta_h < 0:
+        return -1
     else:
-        if delta_h >= 500:
-            return 1
-        elif delta_h >= 200:
-            return 0
-        else:
-            return -1
+        return 1
 
 def G(delta_v, delta_h):
     """
