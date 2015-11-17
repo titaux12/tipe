@@ -1,7 +1,7 @@
 # coding: utf8
 
-from etude_fonction_force import g
 from random import uniform
+import numpy as np
 
 class Voiture(object):
 
@@ -16,33 +16,38 @@ class Voiture(object):
         self.masse = 1300 # masse en kg
         self.longueur = 4 # longueur en mètre
         self.F_max = 5000 # Force d'accélération maximum
-        self.F_min = 5000 # Force de freinage maximum
+        self.F_min = 10000 # Force de freinage maximum
         self.valide = True # False si la voiture est arrivée à la fin de la route
         self.vitesse_limite = vitesse_limite * uniform(0.95, 1.05)
+        self.temps_reaction = 2 # Temps de réaction du conducteur
 
     def update(self, temps_total, delta, indice, voiture_derriere, voiture_devant, longueur):
         if self.position >= longueur:
             # self.valide = False
             self.position -= longueur
         else:
-            distance_securite = 2 * self.vitesse
             # Influence de la voiture de devant
             if voiture_devant is not None:
+
+                indice_decalage = indice - round(self.temps_reaction / delta)
+                v = voiture_devant.obtenir_vitesse(indice_decalage)
+                p = voiture_devant.obtenir_position(indice_decalage)
+                if v is None:
+                    v = voiture_devant.vitesse
+                if p is None:
+                    p = voiture_devant.position
+
+                distance_securite = 2 * (2*self.vitesse - v)
                 # Distance relative par rapport à la voiture de devant
-                if self.position <= voiture_devant.position:
-                    delta_h = abs(voiture_devant.position - self.position) - distance_securite
+                if self.position <= p:
+                    delta_h = abs(p - self.position) - distance_securite
                 else:
-                    delta_h = longueur - abs(voiture_devant.position - self.position) - distance_securite
-                # Vitesse relative avec la voiture de devant
-                delta_v = voiture_devant.vitesse - self.vitesse
+                    delta_h = longueur - abs(p - self.position) - distance_securite
             else:
                 delta_h = 10000
-                delta_v = 10000
 
             # Calcul de la force appliquée par le conducteur
-            G = 1
-            if delta_h <= 0:
-                G = -1
+            G = self.force(delta_h)
             n = self.F_max / self.vitesse_limite
 
             if G > 0:
@@ -75,6 +80,12 @@ class Voiture(object):
                 indice
             ])
 
+    def force(self, delta_h):
+        if delta_h < 0:
+            return (np.arctan(delta_h))*2/np.pi
+        else:
+            return (np.arctan(delta_h*0.1))*2/np.pi
+
     def obtenir_positions(self, temps=True):
         if temps:
             t = []
@@ -91,6 +102,17 @@ class Voiture(object):
                 r.append(d[1][0])
             return i, r
 
+    def obtenir_vitesse(self, i):
+        for d in self.donnees:
+            if d[2] == i:
+                return d[1][1]
+        return None
+
+    def obtenir_position(self, i):
+        for d in self.donnees:
+            if d[2] == i:
+                return d[1][0]
+        return None
 
     def obtenir_vitesses(self):
         t = []

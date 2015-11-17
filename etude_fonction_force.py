@@ -18,9 +18,9 @@ def g(delta_v, delta_h):
     """
 
     if delta_h < 0:
-        return -1
+        return (np.arctan(delta_h))*2/np.pi
     else:
-        return 1
+        return (np.arctan(delta_h*0.1))*2/np.pi
 
 def G(delta_v, delta_h):
     """

@@ -49,7 +49,7 @@ class Route(object):
                 if voiture_devant.position >= 2 * voiture_devant.vitesse + voiture_devant.longueur:
                     self.timer -= 1/self.frequence
 
-                    self.frequence += 0.2
+                    self.frequence += 0.0
 
                     v = voiture_devant.vitesse
                     self.ajouter_voiture(0, v)
@@ -70,7 +70,10 @@ class Route(object):
                 if i != self.N-1:
                     voiture_devant = self.voitures_valides[i+1]
                 else:
-                    voiture_devant = self.voitures_valides[0]
+                    if self.N > 0:
+                        voiture_devant = self.voitures_valides[0]
+                    else:
+                        voiture_devant = None
                 voiture.update(temps_total, delta, indice, voiture_derriere, voiture_devant, self.longueur)
 
         for voiture in self.voitures_valides:
@@ -147,6 +150,8 @@ class Route(object):
         m = np.matrix(Z)
 
         pcolor(np.array(X), np.array(Y), np.array(m.T), cmap="afmhot")
+        ylim(0, self.longueur)
+        xlim(0, self.temps_total)
         show()
 
     def afficher_densite(self):
@@ -160,16 +165,23 @@ class Route(object):
         m = np.matrix(Z)
 
         pcolor(np.array(X), np.array(Y), np.array(m.T), cmap="afmhot")
+        ylim(0, self.longueur)
+        xlim(0, self.temps_total)
         show()
 
     def afficher_flux_densite(self):
         X = []
         Y = []
+
         for d in self.flux_total:
             Y.append(d[1])
         for d in self.densite_totale:
             X.append(d[1])
-        hist2d(np.array(X), np.array(Y), cmap="afmhot", bins=60)
+
+        # hist2d(np.array(X), np.array(Y), cmap="afmhot", bins=60)
+        plot(X, Y, 'bo')
+        xlim(0, max(X)*1.2)
+        ylim(0, max(Y)*1.2)
         show()
 
     def afficher_position(self, indice):
@@ -235,7 +247,7 @@ class Route(object):
         print("Analyse des forces...")
         for i in range(self.N_tot):
             self.afficher_force(i)
-        self.afficher(0, self.temps_total, -6100, 6100)
+        self.afficher(0, self.temps_total, -10000, 10000)
 
     def analyse_trafic(self):
         print("Analyse du flux...")
