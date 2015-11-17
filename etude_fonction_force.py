@@ -4,33 +4,41 @@ from pylab import *
 from mpl_toolkits.mplot3d import Axes3D
 
 # Paramètres
-vitesse_limite = 36
-distance_securite = 2 * vitesse_limite
-vitesse_caracteristique = vitesse_limite
+F_max = 5000
+F_min = 10000
 
+h = 1.25 # Temps de sécurité
+l = 4 # Longueur d'une voiture
 
-def g(delta_v, delta_h):
+n = F_max / 36 # Coefficient de frottement fictif
+vitesse = 0 # Vitesse de la voiture de devant
+d_securite = l + vitesse * h # Distance de sécurité
+
+v = d_securite / h
+d = l
+
+def g(delta_v, delta_x):
     """
     Etude de la fonction qui permet de déterminer la force appliquée par le conducteur en fonction des différents paramètres
     :param delta_v: vitesse relative par rapport à la voiture de devant
-    :param delta_h: distance relative par rapport à la distance de sécurité
+    :param delta_x: distance relative par rapport à la voiture de devant
     :return: la force résultante appliquée par le conducteur
     """
 
-    if delta_h < 0:
-        return (np.arctan(delta_h))*2/np.pi
-    else:
-        return (np.arctan(delta_h*0.1))*2/np.pi
+    F = n*vitesse + (F_max - n*vitesse)*(1 - exp(-delta_v/v) * exp((d_securite - delta_x)/d))
 
-def G(delta_v, delta_h):
+    F = min(F, F_max)
+    return max(F, -F_min)
+
+def G(delta_v, delta_x):
     """
     Etude de la fonction qui permet de déterminer la force appliquée par le conducteur en fonction des différents paramètres
     :param delta_v: vitesse relative par rapport à la voiture de devant
-    :param delta_h: distance relative par rapport à la distance de sécurité
+    :param delta_x: distance relative par rapport à la voiture de devant
     :return: la force résultante appliquée par le conducteur
     """
     V = delta_v.tolist()[0]
-    D = delta_h.tolist()
+    D = delta_x.tolist()
     R = []
     for d in D:
         d = d[0]
@@ -56,7 +64,7 @@ def tracer(xmin, xmax, ymin, ymax):
 
     fig.colorbar(surf, shrink=0.5, aspect=5)
 
-    ax.set_zlim(-1, 1)
+    ax.set_zlim(-F_min, F_max)
     ax.set_xlim(xmin, xmax)
     ax.set_ylim(ymin, ymax)
 
@@ -67,4 +75,4 @@ def tracer(xmin, xmax, ymin, ymax):
     show()
 
 if __name__ == '__main__':
-    tracer(-vitesse_limite, vitesse_limite, -distance_securite, 700)
+    tracer(vitesse - 36, vitesse, 0, 700)
