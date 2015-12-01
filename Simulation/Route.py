@@ -33,10 +33,10 @@ class Route(object):
         self.temps_total = 0 # Temps total de la simulation
         self.pas = 50 # Pas de mesure pour le flux et la densité
         self.timer = 0 
-        self.frequence = 1 #A quoi ça correspond ?
+        self.frequence = 1 #Fréquence d'apparation de nouvelle voiture
         self.f_max = 50
         self.f_min = 1/10
-        self.delta = 0
+        self.delta = 0 #Intervalle de temps de simulation
 
     def initialisation(self, delta):
         self.voitures_valides = []
@@ -77,11 +77,8 @@ class Route(object):
                         voiture_devant = self.voitures_valides[0]
                     else:
                         voiture_devant = None
-<<<<<<< HEAD
-                voiture.update(temps_total, delta, indice, voiture_devant, self.longueur)
-=======
+                #Mise a jour de la voiture
                 voiture.update(temps_total, self.delta, indice, voiture_devant, self.longueur)
->>>>>>> master
 
         for voiture in self.voitures_valides:
             if not voiture.valide:

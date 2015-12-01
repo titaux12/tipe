@@ -23,7 +23,7 @@ class Simulation(object):
         p = 0
         i = 0
         indice = 0
-        while temps_total <= self.temps:
+        while temps_total <= self.temps:            #Boucle principale
             self.route.update(temps_total, indice)
             indice += 1
             temps_total += self.delta
