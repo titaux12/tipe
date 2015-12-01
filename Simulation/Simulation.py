@@ -24,7 +24,7 @@ class Simulation(object):
         i = 0
         indice = 0
         while temps_total <= self.temps:
-            self.route.update(self.delta, temps_total, indice)
+            self.route.update(temps_total, indice)
             indice += 1
             temps_total += self.delta
             i += self.delta / self.temps

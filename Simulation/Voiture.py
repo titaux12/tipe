@@ -20,8 +20,9 @@ class Voiture(object):
         self.valide = True # False si la voiture est arrivée à la fin de la route
         self.vitesse_limite = vitesse_limite * uniform(0.95, 1.05)
         self.temps_reaction = 2 # Temps de réaction du conducteur
+        self.temps_securite = 2
 
-    def update(self, temps_total, delta, indice, voiture_derriere, voiture_devant, longueur):
+    def update(self, temps_total, delta, indice, voiture_devant, longueur):
         if self.position >= longueur:
             # self.valide = False
             self.position -= longueur
@@ -37,8 +38,9 @@ class Voiture(object):
                 if p is None:
                     p = voiture_devant.position
 
-                distance_securite = 2 * (2*self.vitesse - v)
+                distance_securite = 2 * (2*self.vitesse - v) #A revoir la formule (je ne comprend pas la place des 2)
                 # Distance relative par rapport à la voiture de devant
+                #C'est plus la distance qui sépare la voiture de la distance de sécurité
                 if self.position <= p:
                     delta_h = abs(p - self.position) - distance_securite
                 else:
