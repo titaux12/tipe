@@ -48,6 +48,18 @@ class Route(object):
         self.temps_total = 0
         self.delta = delta
 
+    def ajout_section(self):
+        n=1
+        S=[]
+        for section in self.sections :
+            print("Section n°",n)
+            n+=1
+            print("Debut à:",section[0]," de longeur :",section[1]," vitesse maximal :",section[2],
+            " et temps de sécurité :",section[3]])
+        print("S=[Début,longueur,vitesse_limite,temps_securite]")
+        eval(input())
+        self.sections.append(S)     
+
     def update(self, temps_total, indice):
         self.timer += self.delta
         if self.timer >= 1/self.frequence and temps_total <= 86:    #A quoi ça sert ?
