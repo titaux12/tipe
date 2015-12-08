@@ -67,13 +67,19 @@ class Route(object):
         assert len(self.sections)>1
         self.longueur=self.sections[0][1]
         for i in range(1,len(self.sections)):
-            self.sections[i][0] = self.sections[i-1][0] + self.sections[i-1][1]
-            self.longueur+=self.affichage_section[i][1]
+            self.sections[i][0] = self.sections[i-1][0] + self.sections[i-1][1] #Ajuste le début des sections
+            self.longueur+=self.sections[i][1] # Met a jour la distance total de la route
     
     def numero_section(self,position):
-        for section in self.sections:
-            longueur-=section[1]            
-            if longueur<=0
+        """Renvoi l'indice de section dans laquel la voiture ce situe"""
+        assert position<=self.longueur #Sinon la voiture est en dehors de la route        
+        for i in range(len(self.sections)): # Parcours les sections
+            position-=self.sections[i][1]
+            if longueur<=0: # Privilégie la section la plus éloigné
+            # Si position est dans sections[i]
+                return i
+        assert position<=0 # Si position > 0 : voiture hors route
+        
     
     def update(self, temps_total, indice):
         self.timer += self.delta
@@ -105,11 +111,13 @@ class Route(object):
                     else:
                         voiture_devant = None
                 #Mise a jour de la voiture
-                voiture.update(temps_total, self.delta, indice, voiture_devant, self.longueur)
+                indice_section = self.numero_section(voiture.position)
+                voiture.update(temps_total, self.delta, indice, voiture_devant,
+                               self.longueur, self.sections[indice_section][3], self.sections[indice_section][2])
 
-        for voiture in self.voitures_valides:
-            if not voiture.valide:
-                self.retirer_voiture(voiture)
+        #for voiture in self.voitures_valides:
+            #if not voiture.valide:
+                #self.retirer_voiture(voiture)
 
         # Mise à jour du flux de voitures
         F = []
