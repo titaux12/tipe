@@ -48,21 +48,36 @@ class Route(object):
         self.temps_total = 0
         self.delta = delta
 
-    def ajout_section(self):
+    def affichage_section(self):
         n=1
-        S=[]
         for section in self.sections :
             print("Section n°",n)
             n+=1
-            print("Debut à:",section[0]," de longeur :",section[1]," vitesse maximal :",section[2],
-            " et temps de sécurité :",section[3]])
+            print("Debut à:",section[0]," de longeur :",section[1]," vitesse maximal :"
+            ,section[2]," et temps de sécurité :",section[3])
+        print("Rappel du prototype d'ajout de section")
         print("S=[Début,longueur,vitesse_limite,temps_securite]")
-        eval(input())
-        self.sections.append(S)     
 
+    def organise_sections(self):
+        """
+        Reorganise les sections : colle les sections les une contre les autres;
+        A effectuer après chaque supression de section
+        Permet l'insertion de sections entre des sections déjà existante"""
+                
+        assert len(self.sections)>1
+        self.longueur=self.sections[0][1]
+        for i in range(1,len(self.sections)):
+            self.sections[i][0] = self.sections[i-1][0] + self.sections[i-1][1]
+            self.longueur+=self.affichage_section[i][1]
+    
+    def numero_section(self,position):
+        for section in self.sections:
+            longueur-=section[1]            
+            if longueur<=0
+    
     def update(self, temps_total, indice):
         self.timer += self.delta
-        if self.timer >= 1/self.frequence and temps_total <= 86:    #A quoi ça sert ?
+        if self.timer >= 1/self.frequence and temps_total <= 86:
             if self.voitures_valides != []:
                 voiture_devant = self.voitures_valides[0]
                 if voiture_devant.position >= self.temps_securite * voiture_devant.vitesse + voiture_devant.longueur:

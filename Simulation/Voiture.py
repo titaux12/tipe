@@ -12,6 +12,7 @@ class Voiture(object):
         self.position = position # position en mètre
         self.vitesse = vitesse # vitesse en m/s
 
+        self.indice_section=0
         self.donnees = []
         self.masse = 1300 # masse en kg
         self.longueur = 4 # longueur en mètre
