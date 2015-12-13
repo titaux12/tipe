@@ -7,12 +7,12 @@ from matplotlib import animation
 
 class Route(object):
     """
-    Classe repésentant une route à plusieurs voies de circulation.
+    Classe repesentant une route a plusieurs voies de circulation.
     """
 
     def __init__(self, longueur = 3000, vitesse_limite = 36):
-        self.longueur = longueur # Longueur de la route en mètre
-        self.vitesse_limite = vitesse_limite # Vitesse maximale autorisée en m/s
+        self.longueur = longueur # Longueur de la route en metre
+        self.vitesse_limite = vitesse_limite # Vitesse maximale autorisee en m/s
         self.temps_securite = 2
 
         self.voitures_valides = [] # Liste contenant les voitures valides
@@ -31,9 +31,9 @@ class Route(object):
         self.flux_total = []
         self.densite_totale = []
         self.temps_total = 0 # Temps total de la simulation
-        self.pas = 50 # Pas de mesure pour le flux et la densité
+        self.pas = 50 # Pas de mesure pour le flux et la densite
         self.timer = 0 
-        self.frequence = 1 #Fréquence d'apparation de nouvelle voiture
+        self.frequence = 1 #Frequence d'apparation de nouvelle voiture
         self.f_max = 50
         self.f_min = 1/10
         self.delta = 0 #Intervalle de temps de simulation
@@ -53,29 +53,30 @@ class Route(object):
         for section in self.sections :
             print("Section n°",n)
             n+=1
-            print("Debut à:",section[0]," de longeur :",section[1]," vitesse maximal :"
-            ,section[2]," et temps de sécurité :",section[3])
+            print("Debut a:",section[0]," de longeur :",section[1]," vitesse maximal :"
+            ,section[2]," et temps de securite :",section[3])
         print("Rappel du prototype d'ajout de section")
-        print("S=[Début,longueur,vitesse_limite,temps_securite]")
+        print("S=[Debut,longueur,vitesse_limite,temps_securite]")
 
     def organise_sections(self):
         """
         Reorganise les sections : colle les sections les une contre les autres;
-        A effectuer après chaque supression de section
-        Permet l'insertion de sections entre des sections déjà existante"""
+        A effectuer apres chaque supression de section
+        Permet l'insertion de sections entre des sections deja existante"""
                 
         assert len(self.sections)>1
         self.longueur=self.sections[0][1]
         for i in range(1,len(self.sections)):
-            self.sections[i][0] = self.sections[i-1][0] + self.sections[i-1][1] #Ajuste le début des sections
+            self.sections[i][0] = self.sections[i-1][0] + self.sections[i-1][1] #Ajuste le debut des sections
             self.longueur+=self.sections[i][1] # Met a jour la distance total de la route
     
     def numero_section(self,position):
         """Renvoi l'indice de section dans laquel la voiture ce situe"""
-        assert position<=self.longueur #Sinon la voiture est en dehors de la route        
+        if position>self.longueur:
+            return 0#Sinon la voiture est en dehors de la route        
         for i in range(len(self.sections)): # Parcours les sections
             position-=self.sections[i][1]
-            if longueur<=0: # Privilégie la section la plus éloigné
+            if position<=0: # Privilegie la section la plus eloigne
             # Si position est dans sections[i]
                 return i
         assert position<=0 # Si position > 0 : voiture hors route
@@ -119,7 +120,7 @@ class Route(object):
             #if not voiture.valide:
                 #self.retirer_voiture(voiture)
 
-        # Mise à jour du flux de voitures
+        # Mise a jour du flux de voitures
         F = []
         for k in range(0, self.longueur, self.pas):
             v_totale = 0
@@ -142,7 +143,7 @@ class Route(object):
             v / self.longueur
         ])
 
-        # Mise à jour de la densité du trafic
+        # Mise a jour de la densite du trafic
         D = []
         for k in range(0, self.longueur, self.pas):
             v_totale = 0
@@ -227,7 +228,7 @@ class Route(object):
         try:
             voiture = self.voitures[indice]
         except:
-            print("Erreur ! Impossible de récupérer la voiture d'indice " + str(indice))
+            print("Erreur ! Impossible de recuperer la voiture d'indice " + str(indice))
             return None
         X, Y = voiture.obtenir_positions()
         plot(Y, X)
@@ -236,7 +237,7 @@ class Route(object):
         try:
             voiture = self.voitures[indice]
         except:
-            print("Erreur ! Impossible de récupérer la voiture d'indice " + str(indice))
+            print("Erreur ! Impossible de recuperer la voiture d'indice " + str(indice))
             return None
         X, Y = voiture.obtenir_vitesses()
         plot(X, Y)
@@ -245,7 +246,7 @@ class Route(object):
         try:
             voiture = self.voitures[indice]
         except:
-            print("Erreur ! Impossible de récupérer la voiture d'indice " + str(indice))
+            print("Erreur ! Impossible de recuperer la voiture d'indice " + str(indice))
             return None
         X, Y = voiture.obtenir_forces()
         plot(X, Y)
@@ -255,7 +256,7 @@ class Route(object):
             voiture1 = self.voitures[i1]
             voiture2 = self.voitures[i2]
         except:
-            print("Erreur ! Impossible de récupérer les voitures d'indices " + str(i1) + " et " + str(i2))
+            print("Erreur ! Impossible de recuperer les voitures d'indices " + str(i1) + " et " + str(i2))
             return None
         X, Y1 = voiture1.obtenir_positions()
         X, Y2 = voiture2.obtenir_positions()
@@ -292,10 +293,10 @@ class Route(object):
         print("Analyse du flux...")
         self.afficher_flux()
 
-        print("Analyse de la densité...")
+        print("Analyse de la densite...")
         self.afficher_densite()
 
-        print("Génération de la courbe flux-densité...")
+        print("Generation de la courbe flux-densite...")
         self.afficher_flux_densite()
 
     def animation(self):
@@ -305,7 +306,7 @@ class Route(object):
             positions.append(voiture.obtenir_positions(temps=False))
 
         fig = figure()
-        data, = plot([], [], 'bo')
+        data = plot([], [], 'bo')
         xlim(0, self.longueur)
         ylim(0, 1)
         N = round(self.temps_total / self.delta)

@@ -35,10 +35,13 @@ class Simulation(object):
         print("Fin de la simulation")
 
         self.route.analyse_voitures()
-        self.route.animation()
+        #self.route.animation()
         self.route.analyse_trafic()
 
         print("Arrêt de la simulation")
 
 s = Simulation()
+s.route.sections[0]=[0,500,36,2]
+s.route.sections.append([0,300,10,3])
+s.route.organise_sections()
 s.lancer()
