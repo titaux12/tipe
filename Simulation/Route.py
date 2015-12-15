@@ -37,6 +37,7 @@ class Route(object):
         self.f_max = 50
         self.f_min = 1/10
         self.delta = 0 #Intervalle de temps de simulation
+        self.temps_max_generation=0        
 
     def initialisation(self, delta):
         self.voitures_valides = []
@@ -47,6 +48,7 @@ class Route(object):
         self.densite = []
         self.temps_total = 0
         self.delta = delta
+        self.temps_max_generation=self.sections[0][1] // self.sections[0][2]
 
     def affichage_section(self):
         n=1
@@ -66,10 +68,12 @@ class Route(object):
                 
         assert len(self.sections)>1
         self.longueur=self.sections[0][1]
+        self.temps_max_generation=self.sections[0][1] // self.sections[0][2]
         for i in range(1,len(self.sections)):
             self.sections[i][0] = self.sections[i-1][0] + self.sections[i-1][1] #Ajuste le debut des sections
             self.longueur+=self.sections[i][1] # Met a jour la distance total de la route
-    
+            self.temps_max_generation += self.sections[i][1] // self.sections[i][2]
+        
     def numero_section(self,position):
         """Renvoi l'indice de section dans laquel la voiture ce situe"""
         if position>self.longueur:
@@ -81,10 +85,11 @@ class Route(object):
                 return i
         assert position<=0 # Si position > 0 : voiture hors route
         
+
     
     def update(self, temps_total, indice):
         self.timer += self.delta
-        if self.timer >= 1/self.frequence and temps_total <= 86:
+        if self.timer >= 1/self.frequence and temps_total <= self.temps_max_generation:
             if self.voitures_valides != []:
                 voiture_devant = self.voitures_valides[0]
                 if voiture_devant.position >= self.temps_securite * voiture_devant.vitesse + voiture_devant.longueur:
@@ -275,7 +280,7 @@ class Route(object):
 
     def analyse_voitures(self):
         print("Analyse des positions...")
-        for i in range(self.N_tot):
+        for i in range(self.N_tot): # Balai l'ensemble des voitures
             self.afficher_position(i)
         self.afficher(0, self.longueur, 0, self.temps_total)
 

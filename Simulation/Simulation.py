@@ -41,7 +41,7 @@ class Simulation(object):
         print("Arrêt de la simulation")
 
 s = Simulation()
-s.route.sections[0]=[0,500,36,2]
-s.route.sections.append([0,300,10,3])
+s.route.sections[0]=[0,1000,36,2]
+s.route.sections.append([0,1000,36,2])
 s.route.organise_sections()
 s.lancer()

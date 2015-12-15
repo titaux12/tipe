@@ -13,7 +13,7 @@ class Voiture(object):
         self.vitesse = vitesse # vitesse en m/s
 
         self.indice_section=0
-        self.donnees = []
+        self.donnees = [] #=[temps_total, [self.position,self.vitesse,G], indice]
         self.masse = 1300 # masse en kg
         self.longueur = 4 # longueur en mètre
         self.F_max = 5000 # Force d'accélération maximum
@@ -39,7 +39,7 @@ class Voiture(object):
                 if p is None:
                     p = voiture_devant.position
 
-                distance_securite = temps_securite * (2*self.vitesse - v) #A revoir la formule (je ne comprend pas la place des 2)
+                distance_securite = temps_securite * (2*self.vitesse - v)
                 # Distance relative par rapport à la voiture de devant
                 #C'est plus la distance qui sépare la voiture de la distance de sécurité
                 if self.position <= p:
@@ -89,6 +89,11 @@ class Voiture(object):
         else:
             return (np.arctan(delta_h*0.1))*2/np.pi
 
+    def tours_max(self):
+        tours=0
+        for i in range(len(self.donnees)):
+            pass
+    
     def obtenir_positions(self, temps=True):
         if temps:
             t = []
