@@ -6,7 +6,7 @@ from Route import *
 class Simulation(object):
 
     def __init__(self):
-        self.temps = 5*60.0 # Durée de la simulation en secondes
+        self.temps = 3*60.0 # Durée de la simulation en secondes
         self.delta = 1/15.0 # Intervalle de temps entre chaque calcul
         self.route = Route()
 
@@ -41,7 +41,9 @@ class Simulation(object):
         print("Arrêt de la simulation")
 
 s = Simulation()
-s.route.sections[0]=[0,1000,36,2]
-s.route.sections.append([0,1000,36,2])
+s.route.sections[0]=[0,1500,25,2]
+s.route.sections.append([0,500,14,2,5])
+s.route.sections.append([0,300,9,1,5])
+s.route.sections.append([0,400,25,2])
 s.route.organise_sections()
 s.lancer()

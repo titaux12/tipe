@@ -76,14 +76,14 @@ class Route(object):
         
     def numero_section(self,position):
         """Renvoi l'indice de section dans laquel la voiture ce situe"""
-        if position>self.longueur:
-            return 0#Sinon la voiture est en dehors de la route        
+        if position>self.longueur: # Si la voiture est en dehors de la route
+            return 0 # renvoie la 1ère section
         for i in range(len(self.sections)): # Parcours les sections
             position-=self.sections[i][1]
             if position<=0: # Privilegie la section la plus eloigne
             # Si position est dans sections[i]
                 return i
-        assert position<=0 # Si position > 0 : voiture hors route
+        return 0
         
 
     
@@ -267,10 +267,13 @@ class Route(object):
         X, Y2 = voiture2.obtenir_positions()
         Y = []
         D = []
-        for i in range(len(Y1)):
+        for i in range(len(Y2)-1):
             Y.append(Y2[i] - Y1[i])
-            D.append(self.distance_securite)
-        plot(X, Y, label="Distance entre les voitures " + str(i1) + " et " + str(i2))
+            #D.append(self.distance_securite)
+        while len(X) != len(Y):
+            X.pop(i-1)
+        plot(X,Y)
+        #label="Distance entre " + str(i1) + " et " + str(i2)
 
     def afficher(self, xmin, xmax, ymin, ymax):
         xlim(xmin, xmax)
@@ -282,6 +285,11 @@ class Route(object):
         print("Analyse des positions...")
         for i in range(self.N_tot): # Balai l'ensemble des voitures
             self.afficher_position(i)
+        self.afficher(0, self.longueur, 0, self.temps_total)
+
+        print("Analyse des distances relatives...")
+        for i in range(self.N_tot - 1): # Balai l'ensemble des voitures
+            self.afficher_distance(i,i+1)
         self.afficher(0, self.longueur, 0, self.temps_total)
 
         print("Analyse des vitesses...")
