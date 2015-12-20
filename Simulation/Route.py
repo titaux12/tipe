@@ -6,11 +6,8 @@ from matplotlib import animation
 
 
 class Route(object):
-    """
-    Classe repésentant une route à plusieurs voies de circulation.
-    """
 
-    def __init__(self, longueur = 3000, vitesse_limite = 36):
+    def __init__(self, longueur, vitesse_limite, delta):
         self.longueur = longueur # Longueur de la route en mètre
         self.vitesse_limite = vitesse_limite # Vitesse maximale autorisée en m/s
 
@@ -19,63 +16,47 @@ class Route(object):
         self.N_tot = 0 # Nombre de voitures sur la route
         self.N = 0 # Nombre de voitures sur la route valides
 
+        """ Tableau de données """
         self.flux = []
         self.densite = []
         self.flux_total = []
         self.densite_totale = []
+
         self.temps_total = 0 # Temps total de la simulation
         self.pas = 50 # Pas de mesure pour le flux et la densité
-        self.timer = 0
-        self.frequence = 1
-        self.f_max = 50
-        self.f_min = 1/10
-        self.delta = 0
-
-    def initialisation(self, delta):
-        self.voitures_valides = []
-        self.voitures = []
-        self.N = 0
-        self.N_tot = 0
-        self.flux = []
-        self.densite = []
-        self.temps_total = 0
         self.delta = delta
 
+        self.timer = 0
+        self.frequence = 1/3
+        self.f_max = 50
+        self.f_min = 1/10
+
+        self.generer_trafic(100, 20)
+
+    def generer_trafic(self, distance, vitesse):
+        """ Génération de voitures au début de la simulation """
+        p = self.longueur
+        while p > 0:
+            self.ajouter_voiture(p, vitesse)
+            p -= distance
+
     def update(self, delta, temps_total, indice):
-        self.timer += delta
-        if self.timer >= 1/self.frequence and temps_total <= 86:
-            if self.voitures_valides != []:
-                voiture_devant = self.voitures_valides[0]
-                if voiture_devant.position >= 2 * voiture_devant.vitesse + voiture_devant.longueur:
-                    self.timer -= 1/self.frequence
 
-                    self.frequence += 0.0
+        self.temps_total = temps_total # Sauvegarde du temps total de simulation
 
-                    v = voiture_devant.vitesse
-                    self.ajouter_voiture(0, v)
-                else:
-                    self.timer -= delta
-            else:
-                self.ajouter_voiture(0, 36)
-                self.timer -= 1/self.frequence
-
-        self.temps_total = temps_total
         for voiture in self.voitures_valides:
             if voiture.valide:
                 i = self.voitures_valides.index(voiture)
-                if i != 0:
-                    voiture_derriere = self.voitures_valides[i-1]
-                else:
-                    voiture_derriere = None
                 if i != self.N-1:
                     voiture_devant = self.voitures_valides[i+1]
                 else:
-                    if self.N > 0:
+                    if self.N >= 2:
                         voiture_devant = self.voitures_valides[0]
                     else:
                         voiture_devant = None
-                voiture.update(temps_total, delta, indice, voiture_derriere, voiture_devant, self.longueur)
+                voiture.update(temps_total, delta, indice, voiture_devant, self.longueur)
 
+        # On retire les voitures invalides de la simulation
         for voiture in self.voitures_valides:
             if not voiture.valide:
                 self.retirer_voiture(voiture)
@@ -85,7 +66,7 @@ class Route(object):
         for k in range(0, self.longueur, self.pas):
             v_totale = 0
             for voiture in self.voitures_valides:
-                if voiture.position >= k and voiture.position < k + self.pas and voiture.valide:
+                if voiture.position >= k and voiture.position < k + self.pas:
                     v_totale += voiture.vitesse
             F.append(v_totale / self.pas)
 
@@ -96,8 +77,7 @@ class Route(object):
 
         v = 0
         for voiture in self.voitures_valides:
-            if voiture.valide:
-                v += voiture.vitesse
+            v += voiture.vitesse
         self.flux_total.append([
             temps_total,
             v / self.longueur
@@ -108,7 +88,7 @@ class Route(object):
         for k in range(0, self.longueur, self.pas):
             v_totale = 0
             for voiture in self.voitures_valides:
-                if abs(voiture.position - k) < self.pas and voiture.valide:
+                if abs(voiture.position - k) < self.pas:
                     v_totale += 1
             D.append(v_totale / self.pas)
 
@@ -233,19 +213,21 @@ class Route(object):
         legend(loc="best")
         show()
 
-    def analyse_voitures(self):
+    def analyse_voitures(self, nombre=-1):
+        if nombre == -1:
+            nombre = self.N_tot
         print("Analyse des positions...")
-        for i in range(self.N_tot):
+        for i in range(nombre):
             self.afficher_position(i)
         self.afficher(0, self.longueur, 0, self.temps_total)
 
         print("Analyse des vitesses...")
-        for i in range(self.N_tot):
+        for i in range(nombre):
             self.afficher_vitesse(i)
         self.afficher(0, self.temps_total, 0, 40)
 
         print("Analyse des forces...")
-        for i in range(self.N_tot):
+        for i in range(nombre):
             self.afficher_force(i)
         self.afficher(0, self.temps_total, -10000, 10000)
 
