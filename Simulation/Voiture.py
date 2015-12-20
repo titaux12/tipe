@@ -20,7 +20,7 @@ class Voiture(object):
         self.valide = True # Booléen pour savoir si la voiture doit être prise en compte dans la simulation
         self.vitesse_limite = vitesse_limite # Vitesse limite du conducteur en m/s
         self.temps_reaction = 2 # Temps de réaction du conducteur en secondes
-         # Création du modèle pour la gestion de l'accélération
+        # Création du modèle pour la gestion de l'accélération
         self.modele = Modele(
             [8, 2, 1, 2, 0.5]
         )

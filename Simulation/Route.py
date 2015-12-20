@@ -3,6 +3,9 @@
 from Voiture import *
 from pylab import *
 from matplotlib import animation
+from datetime import *
+import pickle
+import os
 
 
 class Route(object):
@@ -26,12 +29,21 @@ class Route(object):
         self.pas = 50 # Pas de mesure pour le flux et la densité
         self.delta = delta
 
-        self.timer = 0
-        self.frequence = 1/3
-        self.f_max = 50
-        self.f_min = 1/10
+    def initialisation(self, espacement, vitesse):
+        self.voitures_valides = []
+        self.voitures = []
+        self.N_tot = 0
+        self.N = 0
 
-        self.generer_trafic(100, 20)
+        """ Tableau de données """
+        self.flux = []
+        self.densite = []
+        self.flux_total = []
+        self.densite_totale = []
+
+        self.temps_total = 0
+
+        self.generer_trafic(espacement, vitesse)
 
     def generer_trafic(self, distance, vitesse):
         """ Génération de voitures au début de la simulation """
@@ -271,3 +283,24 @@ class Route(object):
         animation.FuncAnimation(fig, update, frames=N, interval=self.delta/1000, repeat=False)
         legend()
         show()
+
+    def sauvegarde(self):
+        """
+        Fonction qui sauvegarde dans un fichier les données de la simulation
+        """
+        d = datetime.now()
+        nom_fichier = str(d.day) + "-" + str(d.month) + "-" + str(d.year) + "_" + str(d.hour) + str(d.minute) + str(d.second) + str(d.microsecond)
+        print("Sauvegarde dans le fichier : Données/" + nom_fichier)
+
+        with open(os.getcwd() + "/Données/" + nom_fichier, 'wb') as fichier:
+            p = pickle.Pickler(fichier)
+            """ Enregistrement des données de la simualation """
+            # Paramètres de la simulation
+            p.dump([
+                self.temps_total,
+                self.delta,
+                self.longueur
+            ])
+
+            p.dump(self.flux_total)
+            p.dump(self.densite_totale)
