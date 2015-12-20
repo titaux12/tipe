@@ -4,7 +4,18 @@ from pylab import *
 
 """
 Présentation du modèle :
-
+Il y a 3 types de régimes:
+    - Régime libre: la voiture tend à rouler à la vitesse maximale
+    - Régime contraint: la voiture adapte son allure en fonction de la voiture de devant
+    - Régime freinage d'urgence: la voiture est beaucoup trop proche et freine au maximum
+Le régime est déterminé en fonction du temps relatif:
+    - Régime libre si Dt >= temps_max en général dans les 10 secondes
+    - Régime contraint si temps_min <= Dt <= temps_max ou temps_min est le temps de sécurité soit 2 secondes en général
+    - Régime d'urgence si Dt <= temps_min
+De plus, 3 coefficients permettent d'influencer les paramètres:
+    - alpha: coefficient global
+    - beta: influence de la vitesse du véhicule dans la réaction
+    - gamma: influence de la distance
 """
 
 
