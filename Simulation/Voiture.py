@@ -25,10 +25,12 @@ class Voiture(object):
             [8, 2, 1, 2, 0.5]
         )
 
-    def update(self, temps_total, delta, indice, voiture_devant, longueur):
+    def update(self, temps_total, delta, indice, voiture_devant, longueur, boucle=True):
         if self.position >= longueur:
-            # self.valide = False
-            self.position -= longueur
+            if boucle: # Si on boucle on soustrait la longueur de la route à la position de la voiture
+                self.position -= longueur
+            else: # Sinon on retire la voiture de la simulation
+                self.valide = False
 
         # Influence de la voiture de devant
         if voiture_devant is not None:

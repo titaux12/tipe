@@ -12,6 +12,12 @@ class Simulation(object):
     def initialisation(self, espacement, vitesse):
         self.route.initialisation(espacement, vitesse)
 
+    def parametres(self, flux, densite):
+        if not flux:
+            self.route.desactiver_flux()
+        if not densite:
+            self.route.desactiver_densite()
+
     def lancer(self):
         temps_total = 0
         p = 0 # Avancement de la simulation
@@ -43,8 +49,5 @@ class Simulation(object):
 s = Simulation()
 
 for p in range(10, 1500, 50):
-    # a = 36/(1000 - 100)
-    # v = a * p + (36 - a*(1000 + 100))/2
-    # print(p, v)
     s.initialisation(p, 0)
     s.lancer()

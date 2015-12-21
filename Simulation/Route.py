@@ -25,6 +25,9 @@ class Route(object):
         self.flux_total = []
         self.densite_totale = []
 
+        self.flux_active = True
+        self.densite_active = True
+
         self.temps_total = 0 # Temps total de la simulation
         self.pas = 50 # Pas de mesure pour le flux et la densité
         self.delta = delta
@@ -41,9 +44,20 @@ class Route(object):
         self.flux_total = []
         self.densite_totale = []
 
+        self.flux_active = True
+        self.densite_active = True
+
         self.temps_total = 0
 
         self.generer_trafic(espacement, vitesse)
+
+    def desactiver_flux():
+        if self.temps_total == 0
+            self.flux_active = False
+
+    def desactiver_densite():
+        if self.temps_total == 0
+            self.densite_active = False
 
     def generer_trafic(self, distance, vitesse):
         """ Génération de voitures au début de la simulation """
@@ -74,18 +88,19 @@ class Route(object):
                 self.retirer_voiture(voiture)
 
         # Mise à jour du flux de voitures
-        F = []
-        for k in range(0, self.longueur, self.pas):
-            v_totale = 0
-            for voiture in self.voitures_valides:
-                if voiture.position >= k and voiture.position < k + self.pas:
-                    v_totale += voiture.vitesse
-            F.append(v_totale / self.pas)
+        if self.flux_active:
+            F = []
+            for k in range(0, self.longueur, self.pas):
+                v_totale = 0
+                for voiture in self.voitures_valides:
+                    if voiture.position >= k and voiture.position < k + self.pas:
+                        v_totale += voiture.vitesse
+                F.append(v_totale / self.pas)
 
-        self.flux.append([
-            temps_total,
-            F
-        ])
+            self.flux.append([
+                temps_total,
+                F
+            ])
 
         v = 0
         for voiture in self.voitures_valides:
@@ -95,19 +110,20 @@ class Route(object):
             v / self.longueur
         ])
 
-        # Mise à jour de la densité du trafic
-        D = []
-        for k in range(0, self.longueur, self.pas):
-            v_totale = 0
-            for voiture in self.voitures_valides:
-                if abs(voiture.position - k) < self.pas:
-                    v_totale += 1
-            D.append(v_totale / self.pas)
+        if self.densite_active:
+            # Mise à jour de la densité du trafic
+            D = []
+            for k in range(0, self.longueur, self.pas):
+                v_totale = 0
+                for voiture in self.voitures_valides:
+                    if abs(voiture.position - k) < self.pas:
+                        v_totale += 1
+                D.append(v_totale / self.pas)
 
-        self.densite.append([
-            temps_total,
-            D
-        ])
+            self.densite.append([
+                temps_total,
+                D
+            ])
 
         self.densite_totale.append([
             temps_total,
@@ -245,10 +261,12 @@ class Route(object):
 
     def analyse_trafic(self):
         print("Analyse du flux...")
-        self.afficher_flux()
+        if self.flux_active:
+            self.afficher_flux()
 
         print("Analyse de la densité...")
-        self.afficher_densite()
+        if self.densite_active:
+            self.afficher_densite()
 
         print("Génération de la courbe flux-densité...")
         self.afficher_flux_densite()
