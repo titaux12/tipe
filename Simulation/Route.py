@@ -271,7 +271,7 @@ class Route(object):
             Y.append(Y2[i] - Y1[i])
             #D.append(self.distance_securite)
         while len(X) != len(Y):
-            X.pop(i-1)
+            X.pop(i)
         plot(X,Y)
         #label="Distance entre " + str(i1) + " et " + str(i2)
 
@@ -291,6 +291,7 @@ class Route(object):
         for i in range(self.N_tot - 1): # Balai l'ensemble des voitures
             self.afficher_distance(i,i+1)
         self.afficher(0, self.longueur, 0, self.temps_total)
+        
 
         print("Analyse des vitesses...")
         for i in range(self.N_tot):
