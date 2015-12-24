@@ -32,6 +32,8 @@ class Route(object):
         self.pas = 50 # Pas de mesure pour le flux et la densité
         self.delta = delta
 
+        self.sections = [] # [position, longueur, vitesse_limite, temps_securite]
+
     def initialisation(self, espacement, vitesse):
         self.voitures_valides = []
         self.voitures = []
@@ -51,12 +53,76 @@ class Route(object):
 
         self.generer_trafic(espacement, vitesse)
 
-    def desactiver_flux():
-        if self.temps_total == 0
+    def ajouter_section(self, longueur, vitesse_limite, temps_securite, indice=0):
+        self.sections.insert(indice, [0, longueur, vitesse_limite, temps_securite])
+        self.organise_sections()
+
+    def affichage_section(self):
+        """
+        Affichage des sections sous forme de tableau avec alignement automatique
+        """
+        S = ["Numéro", "Position", "Longueur", "Vitesse maximale", "Temps de sécurité"]
+
+        # Affichage de la liste des sommets avec alignement
+        ligne = " "
+        for s in S:
+            ligne += s + " | "
+        print(ligne)
+
+        # Affichage de la matrice avec alignement
+        n = 0
+        for section in self.sections:
+            l = (len(S[0]) + 2 - len(str(n)))/2
+            if int(l) == l:
+                l = int(l)
+                ligne = " " * l +  str(n) + " " * l + "|"
+            else:
+                l = int(l)
+                ligne = " " * l +  str(n) + " " * (l+1) + "|"
+            n += 1
+            i = 1
+            for a in section:
+                s = S[i]
+                i += 1
+                l = (len(s) + 2 - len(str(a)))/2
+                if int(l) == l:
+                    l = int(l)
+                    ligne += " " * l +  str(a) + " " * l + "|"
+                else:
+                    l = int(l)
+                    ligne += " " * l +  str(a) + " " * (l+1) + "|"
+
+            print(ligne)
+
+    def organise_sections(self):
+        """
+        Réorganise les sections en ajustant leur position de départ
+        A effectuer après chaque supression ou ajout de section
+        """
+        if len(self.sections) > 1: # Il faut au moins 2 sections
+            self.longueur = self.sections[0][1]
+            for i in range(1, len(self.sections)):
+                self.sections[i][0] = self.sections[i-1][0] + self.sections[i-1][1] # Ajuste le debut des sections selon: position en i = postion en i-1 + longueur de i-1
+                self.longueur += self.sections[i][1] # Mise à jour de la longueur de la route
+
+    def numero_section(self, position):
+        """
+        Renvoie l'indice de la section traversée par la voiture pour une position donnée à l'intérieur de la route
+        """
+        if position > self.longueur: # Si la voiture est en dehors de la route
+            return 0 # renvoie la 1ère section
+        for i in range(len(self.sections)):
+            position -= self.sections[i][1]
+            if position <= 0: # La voiture se situe alors dans la section numéro i
+                return i
+        return 0
+
+    def desactiver_flux(self):
+        if self.temps_total == 0:
             self.flux_active = False
 
-    def desactiver_densite():
-        if self.temps_total == 0
+    def desactiver_densite(self):
+        if self.temps_total == 0:
             self.densite_active = False
 
     def generer_trafic(self, distance, vitesse):
@@ -80,7 +146,8 @@ class Route(object):
                         voiture_devant = self.voitures_valides[0]
                     else:
                         voiture_devant = None
-                voiture.update(temps_total, delta, indice, voiture_devant, self.longueur)
+                indice_section = self.numero_section(voiture.position)
+                voiture.update(temps_total, delta, indice, voiture_devant, self.longueur, self.sections[indice_section][3], self.sections[indice_section][2])
 
         # On retire les voitures invalides de la simulation
         for voiture in self.voitures_valides:

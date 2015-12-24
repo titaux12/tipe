@@ -19,6 +19,11 @@ class Simulation(object):
             self.route.desactiver_densite()
 
     def lancer(self):
+
+        if len(self.route.sections) == 0:
+            print("Il faut au moins une section !")
+            return None
+
         temps_total = 0
         p = 0 # Avancement de la simulation
         i = 0
@@ -36,18 +41,25 @@ class Simulation(object):
         print("Fin de la simulation")
 
         """ Lancement des analyses """
-        # self.route.analyse_voitures(nombre=1)
-        # self.route.animation()
-        # self.route.analyse_trafic()
+        self.route.analyse_voitures(nombre=1)
+        self.route.animation()
+        self.route.analyse_trafic()
         """ Fin des analyses """
 
         # Sauvegarde des données
-        self.route.sauvegarde()
+        # self.route.sauvegarde()
 
         print("Arrêt de la simulation")
 
 s = Simulation()
 
-for p in range(10, 1500, 50):
-    s.initialisation(p, 0)
-    s.lancer()
+s.route.ajouter_section(1000, 0, 2)
+s.route.ajouter_section(2000, 36, 2)
+s.route.affichage_section()
+
+s.initialisation(500, 0)
+s.lancer()
+
+# for p in range(10, 1500, 50):
+#     s.initialisation(p, 0)
+#     s.lancer()

@@ -28,7 +28,7 @@ class Modele(object):
         self.beta = parametres[3]
         self.gamma = parametres[4]
 
-    def calcul_force(self, voiture, Dx, Dv):
+    def calcul_force(self, voiture, Dx, Dv, v_max):
         """
         :return: L'accélération du véhicule en fonction du véhicule de devant
         """
@@ -40,7 +40,6 @@ class Modele(object):
 
         F_max = voiture.F_max
         F_min = voiture.F_min
-        v_max = voiture.vitesse_limite
         l = voiture.longueur
 
         if Dt >= self.temps_max: # Régime libre
