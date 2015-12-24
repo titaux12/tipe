@@ -43,7 +43,7 @@ class Simulation(object):
         """ Lancement des analyses """
         self.route.analyse_voitures(nombre=1)
         self.route.animation()
-        self.route.analyse_trafic()
+        # self.route.analyse_trafic()
         """ Fin des analyses """
 
         # Sauvegarde des données
@@ -53,11 +53,12 @@ class Simulation(object):
 
 s = Simulation()
 
-s.route.ajouter_section(1000, 0, 2)
-s.route.ajouter_section(2000, 36, 2)
+s.route.ajouter_section(2000, 25, 2)
+s.route.ajouter_section(1000, 5, 2)
+s.route.ajouter_section(2000, 25, 2)
 s.route.affichage_section()
 
-s.initialisation(500, 0)
+s.initialisation(300, 25)
 s.lancer()
 
 # for p in range(10, 1500, 50):

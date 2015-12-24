@@ -15,14 +15,12 @@ class Voiture(object):
         self.vitesse = vitesse # Vitesse en m/s
         self.masse = 1300 # Masse en kg
         self.longueur = 4 # Longueur en mètre
-        self.F_max = 1500 # Force d'accélération maximum en newton
-        self.F_min = 3000 # Force de freinage maximum en newton
+        self.F_max = 10000 # Force d'accélération maximum en newton
+        self.F_min = 10000 # Force de freinage maximum en newton
         self.valide = True # Booléen pour savoir si la voiture doit être prise en compte dans la simulation
         self.temps_reaction = 2 # Temps de réaction du conducteur en secondes
         # Création du modèle pour la gestion de l'accélération
-        self.modele = Modele(
-            [8, 2, 1, 1, 1]
-        )
+        self.modele = Modele(2)
 
     def update(self, temps_total, delta, indice, voiture_devant, longueur, temps_securite, vitesse_limite, boucle=True):
         if self.position >= longueur:
@@ -52,10 +50,10 @@ class Voiture(object):
             delta_x = 1000000
             delta_v = -1000000
 
-        self.modele.temps_min = temps_securite # Mise à jour du temps de sécurité
+        self.modele.temps_securite = temps_securite # Mise à jour du temps de sécurité
 
         # Calcul de la force appliquée par le conducteur
-        F = self.modele.calcul_force(self, delta_x, delta_v, vitesse_limite)
+        F = self.modele.calcul_force(self.vitesse, delta_x, vitesse_limite)
 
         # On limite la force appliquée par le conducteur
         F = min(F, self.F_max)
