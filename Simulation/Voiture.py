@@ -2,86 +2,40 @@
 
 from random import uniform
 import numpy as np
-from Modele import Modele
+from Modele import *
 
 class Voiture(object):
 
-    def __init__(self, position, vitesse, vitesse_limite):
+    def __init__(self, position, vitesse):
         assert position >= 0
         assert vitesse >= 0
-<<<<<<< HEAD
-        # Vitesse et position initiales de la voiture
+        self.donnees = [] # Tableau contenant les données enregistrées lors de la simulation
+        #                   = [temps_total, [self.position,self.vitesse,G], indice]
         self.position = position # position en mètre
         self.vitesse = vitesse # vitesse en m/s
 
         self.indice_section=0
-        self.donnees = [] #=[temps_total, [self.position,self.vitesse,G], indice]
         self.masse = 1300 # masse en kg
         self.longueur = 4 # longueur en mètre
-        self.F_max = 5000 # Force d'accélération maximum
-        self.F_min = 10000 # Force de freinage maximum
-        self.valide = True # False si la voiture est arrivée à la fin de la route
-        self.coefficient_vitesse = uniform(0.95, 1.05)
-        self.temps_reaction = 2 # Temps de réaction du conducteur
-
-    def update(self, temps_total, delta, indice, voiture_devant, longueur, temps_securite, vitesse_limite):
-        vitesse_limite = vitesse_limite * self.coefficient_vitesse
-        if self.position >= longueur:
-            # self.valide = False
-            self.position -= longueur
-        else:
-            # Influence de la voiture de devant
-            if voiture_devant is not None:
-
-                indice_decalage = indice - round(self.temps_reaction / delta)
-                v = voiture_devant.obtenir_vitesse(indice_decalage)
-                p = voiture_devant.obtenir_position(indice_decalage)
-                if v is None:
-                    v = voiture_devant.vitesse
-                if p is None:
-                    p = voiture_devant.position
-
-                distance_securite = temps_securite * (2*self.vitesse - v)
-                # Distance relative par rapport à la voiture de devant
-                #C'est plus la distance qui sépare la voiture de la distance de sécurité
-                if self.position <= p:
-                    delta_h = abs(p - self.position) - distance_securite
-                else:
-                    delta_h = longueur - abs(p - self.position) - distance_securite
-            else:
-                delta_h = 10000
-
-            # Calcul de la force appliquée par le conducteur
-            G = self.force(delta_h)
-            n = self.F_max / vitesse_limite
-
-            if G > 0:
-                G *= self.F_max
-=======
-
-        self.donnees = [] # Tableau contenant les données enregistrées lors de la simulation
-        self.position = position # Position en mètre
-        self.vitesse = vitesse # Vitesse en m/s
-        self.masse = 1300 # Masse en kg
-        self.longueur = 4 # Longueur en mètre
         self.F_max = 1500 # Force d'accélération maximum en newton
-        self.F_min = 3000 # Force de freinage maximum en newton
+        self.F_min = 3000 # Force de freinage maximumen newton
         self.valide = True # Booléen pour savoir si la voiture doit être prise en compte dans la simulation
-        self.vitesse_limite = vitesse_limite # Vitesse limite du conducteur en m/s
+        self.coefficient_vitesse = uniform(0.95, 1.05) #Pourcentage de la vitesse limité adopté.
         self.temps_reaction = 2 # Temps de réaction du conducteur en secondes
         # Création du modèle pour la gestion de l'accélération
         self.modele = Modele(
             [8, 2, 1, 2, 0.5]
         )
 
-    def update(self, temps_total, delta, indice, voiture_devant, longueur, boucle=True):
+    def update(self, temps_total, delta, indice, voiture_devant, longueur, temps_securite, vitesse_limite, boucle=True):
+        vitesse_limite *= self.coefficient_vitesse
         if self.position >= longueur:
             if boucle: # Si on boucle on soustrait la longueur de la route à la position de la voiture
                 self.position -= longueur
             else: # Sinon on retire la voiture de la simulation
                 self.valide = False
-
-        # Influence de la voiture de devant
+                
+            # Influence de la voiture de devant
         if voiture_devant is not None:
             """ Intégration du temps de réaction """
             indice_decalage = indice - round(self.temps_reaction / delta)
@@ -92,11 +46,11 @@ class Voiture(object):
             if p is None:
                 p = voiture_devant.position
 
+            distance_securite = temps_securite * (2*self.vitesse - v)
             delta_v = v - self.vitesse # Vitesse relative
             # Distance relative
             if self.position <= p:
                 delta_x = p - self.position
->>>>>>> axelsauvage/master
             else:
                 delta_x = longueur - abs(p - self.position)
         else:
@@ -104,7 +58,7 @@ class Voiture(object):
             delta_v = -1000000
 
         # Calcul de la force appliquée par le conducteur
-        F = self.modele.calcul_force(self, delta_x, delta_v)
+        F = self.modele.calcul_force(self, delta_x, delta_v, vitesse_limite)
 
         # On limite la force appliquée par le conducteur
         F = min(F, self.F_max)

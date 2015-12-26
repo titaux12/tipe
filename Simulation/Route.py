@@ -9,38 +9,29 @@ import os
 
 
 class Route(object):
-<<<<<<< HEAD
     """
     Classe repesentant une route a plusieurs voies de circulation.
     """
 
-    def __init__(self, longueur = 3000, vitesse_limite = 36):
+    def __init__(self, longueur, vitesse_limite, delta):
         self.longueur = longueur # Longueur de la route en metre
         self.vitesse_limite = vitesse_limite # Vitesse maximale autorisee en m/s
         self.temps_securite = 2
-=======
-
-    def __init__(self, longueur, vitesse_limite, delta):
-        self.longueur = longueur # Longueur de la route en mètre
-        self.vitesse_limite = vitesse_limite # Vitesse maximale autorisée en m/s
->>>>>>> axelsauvage/master
 
         self.voitures_valides = [] # Liste contenant les voitures valides
                                    #Est ce classer dans un ordre particulier ?
         self.voitures = [] # Liste contenant les voitures
         self.N_tot = 0 # Nombre de voitures sur la route
         self.N = 0 # Nombre de voitures sur la route valides
-<<<<<<< HEAD
+        
         self.sections=[ #[position, longueur, Vmax, temps_securite]
                         #Etat initial : 1 section = la route
         [0,self.longueur,self.vitesse_limite,self.temps_securite]        
         ]        
-        
-        
-=======
+#        self.temps_max_generation=self.sections[0][1] // self.sections[0][2]
+
 
         """ Tableau de données """
->>>>>>> axelsauvage/master
         self.flux = []
         self.densite = []
         self.flux_total = []
@@ -48,22 +39,12 @@ class Route(object):
 
         self.flux_active = True
         self.densite_active = True
-
         self.temps_total = 0 # Temps total de la simulation
-<<<<<<< HEAD
-        self.pas = 50 # Pas de mesure pour le flux et la densite
-        self.timer = 0 
-        self.frequence = 1 #Frequence d'apparation de nouvelle voiture
-        self.f_max = 50
-        self.f_min = 1/10
-        self.delta = 0 #Intervalle de temps de simulation
-        self.temps_max_generation=0        
-=======
         self.pas = 50 # Pas de mesure pour le flux et la densité
         self.delta = delta
->>>>>>> axelsauvage/master
 
     def initialisation(self, espacement, vitesse):
+        """Initialise les variable et génére le traffic """
         self.voitures_valides = []
         self.voitures = []
         self.N_tot = 0
@@ -79,9 +60,9 @@ class Route(object):
         self.densite_active = True
 
         self.temps_total = 0
-<<<<<<< HEAD
-        self.delta = delta
-        self.temps_max_generation=self.sections[0][1] // self.sections[0][2]
+        
+        self.generer_trafic(espacement, vitesse)
+
 
     def affichage_section(self):
         n=1
@@ -108,7 +89,9 @@ class Route(object):
             self.temps_max_generation += self.sections[i][1] // self.sections[i][2]
         
     def numero_section(self,position):
-        """Renvoi l'indice de section dans laquel la voiture ce situe"""
+        """Renvoi l'indice de section dans laquel la voiture ce situe
+           Modification possible : rajout du parametre indice_sections précédent
+           Atout -> enlève le for (source de beaucoup de calcul), réduit d'environ nb_section ** voiture calcul"""
         if position>self.longueur: # Si la voiture est en dehors de la route
             return 0 # renvoie la 1ère section
         for i in range(len(self.sections)): # Parcours les sections
@@ -119,34 +102,12 @@ class Route(object):
         return 0
         
 
-    
-    def update(self, temps_total, indice):
-        self.timer += self.delta
-        if self.timer >= 1/self.frequence and temps_total <= self.temps_max_generation:
-            if self.voitures_valides != []:
-                voiture_devant = self.voitures_valides[0]
-                if voiture_devant.position >= self.temps_securite * voiture_devant.vitesse + voiture_devant.longueur:
-                    self.timer -= 1/self.frequence
-=======
-
-        self.generer_trafic(espacement, vitesse)
->>>>>>> axelsauvage/master
-
     def desactiver_flux():
-        if self.temps_total == 0
+        if self.temps_total == 0:
             self.flux_active = False
 
-<<<<<<< HEAD
-                    v = voiture_devant.vitesse
-                    self.ajouter_voiture(0, v)
-                else:
-                    self.timer -= self.delta
-            else:
-                self.ajouter_voiture(0, 36)
-                self.timer -= 1/self.frequence
-=======
     def desactiver_densite():
-        if self.temps_total == 0
+        if self.temps_total == 0:
             self.densite_active = False
 
     def generer_trafic(self, distance, vitesse):
@@ -156,10 +117,9 @@ class Route(object):
             self.ajouter_voiture(p, vitesse)
             p -= distance
 
-    def update(self, delta, temps_total, indice):
+    def update(self, temps_total, indice):
 
         self.temps_total = temps_total # Sauvegarde du temps total de simulation
->>>>>>> axelsauvage/master
 
         for voiture in self.voitures_valides:
             if voiture.valide:
@@ -171,31 +131,10 @@ class Route(object):
                         voiture_devant = self.voitures_valides[0]
                     else:
                         voiture_devant = None
-<<<<<<< HEAD
                 #Mise a jour de la voiture
                 indice_section = self.numero_section(voiture.position)
                 voiture.update(temps_total, self.delta, indice, voiture_devant,
                                self.longueur, self.sections[indice_section][3], self.sections[indice_section][2])
-
-        #for voiture in self.voitures_valides:
-            #if not voiture.valide:
-                #self.retirer_voiture(voiture)
-
-        # Mise a jour du flux de voitures
-        F = []
-        for k in range(0, self.longueur, self.pas):
-            v_totale = 0
-            for voiture in self.voitures_valides:
-                if voiture.position >= k and voiture.position < k + self.pas and voiture.valide:
-                    v_totale += voiture.vitesse
-            F.append(v_totale / self.pas)
-
-        self.flux.append([
-            temps_total,
-            F
-        ])
-=======
-                voiture.update(temps_total, delta, indice, voiture_devant, self.longueur)
 
         # On retire les voitures invalides de la simulation
         for voiture in self.voitures_valides:
@@ -216,7 +155,6 @@ class Route(object):
                 temps_total,
                 F
             ])
->>>>>>> axelsauvage/master
 
         v = 0
         for voiture in self.voitures_valides:
@@ -226,21 +164,6 @@ class Route(object):
             v / self.longueur
         ])
 
-<<<<<<< HEAD
-        # Mise a jour de la densite du trafic
-        D = []
-        for k in range(0, self.longueur, self.pas):
-            v_totale = 0
-            for voiture in self.voitures_valides:
-                if abs(voiture.position - k) < self.pas and voiture.valide:
-                    v_totale += 1
-            D.append(v_totale / self.pas)
-
-        self.densite.append([
-            temps_total,
-            D
-        ])
-=======
         if self.densite_active:
             # Mise à jour de la densité du trafic
             D = []
@@ -255,7 +178,6 @@ class Route(object):
                 temps_total,
                 D
             ])
->>>>>>> axelsauvage/master
 
         self.densite_totale.append([
             temps_total,
@@ -263,7 +185,7 @@ class Route(object):
         ])
 
     def ajouter_voiture(self, position, vitesse, index=0):
-        voiture = Voiture(position, vitesse, self.vitesse_limite)
+        voiture = Voiture(position, vitesse)
         self.voitures_valides.insert(index, voiture)
         self.voitures.append(voiture)
         self.N += 1
@@ -380,19 +302,15 @@ class Route(object):
         if nombre == -1:
             nombre = self.N_tot
         print("Analyse des positions...")
-<<<<<<< HEAD
-        for i in range(self.N_tot): # Balai l'ensemble des voitures
-=======
         for i in range(nombre):
->>>>>>> axelsauvage/master
             self.afficher_position(i)
         self.afficher(0, self.longueur, 0, self.temps_total)
 
-        print("Analyse des distances relatives...")
+        """print("Analyse des distances relatives...")
         for i in range(self.N_tot - 1): # Balai l'ensemble des voitures
             self.afficher_distance(i,i+1)
         self.afficher(0, self.longueur, 0, self.temps_total)
-        
+        """
 
         print("Analyse des vitesses...")
         for i in range(nombre):
@@ -409,14 +327,9 @@ class Route(object):
         if self.flux_active:
             self.afficher_flux()
 
-<<<<<<< HEAD
-        print("Analyse de la densite...")
-        self.afficher_densite()
-=======
         print("Analyse de la densité...")
         if self.densite_active:
             self.afficher_densite()
->>>>>>> axelsauvage/master
 
         print("Generation de la courbe flux-densite...")
         self.afficher_flux_densite()
