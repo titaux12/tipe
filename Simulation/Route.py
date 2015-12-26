@@ -7,6 +7,12 @@ from datetime import *
 import pickle
 import os
 
+def est_positif(nombre):
+    if nombre>=0:
+        return True
+    else:
+        return False
+
 
 class Route(object):
     """
@@ -65,52 +71,6 @@ class Route(object):
         
         self.generer_trafic(espacement, vitesse)
 
-<<<<<<< HEAD
-
-    def affichage_section(self):
-        n=1
-        for section in self.sections :
-            print("Section n°",n)
-            n+=1
-            print("Debut a:",section[0]," de longeur :",section[1]," vitesse maximal :"
-            ,section[2]," et temps de securite :",section[3])
-        print("Rappel du prototype d'ajout de section")
-        print("S=[Debut,longueur,vitesse_limite,temps_securite]")
-
-    def organise_sections(self):
-        """
-        Reorganise les sections : colle les sections les une contre les autres;
-        A effectuer apres chaque supression de section
-        Permet l'insertion de sections entre des sections deja existante"""
-                
-        assert len(self.sections)>1
-        self.longueur=self.sections[0][1]
-        self.temps_max_generation=self.sections[0][1] // self.sections[0][2]
-        for i in range(1,len(self.sections)):
-            self.sections[i][0] = self.sections[i-1][0] + self.sections[i-1][1] #Ajuste le debut des sections
-            self.longueur+=self.sections[i][1] # Met a jour la distance total de la route
-            self.temps_max_generation += self.sections[i][1] // self.sections[i][2]
-        
-    def numero_section(self,position):
-        """Renvoi l'indice de section dans laquel la voiture ce situe
-           Modification possible : rajout du parametre indice_sections précédent
-           Atout -> enlève le for (source de beaucoup de calcul), réduit d'environ nb_section ** voiture calcul"""
-        if position>self.longueur: # Si la voiture est en dehors de la route
-            return 0 # renvoie la 1ère section
-        for i in range(len(self.sections)): # Parcours les sections
-            position-=self.sections[i][1]
-            if position<=0: # Privilegie la section la plus eloigne
-            # Si position est dans sections[i]
-                return i
-        return 0
-        
-
-    def desactiver_flux():
-        if self.temps_total == 0:
-            self.flux_active = False
-
-    def desactiver_densite():
-=======
     def ajouter_section(self, longueur, vitesse_limite, temps_securite, indice=0):
         self.sections.insert(indice, [0, longueur, vitesse_limite, temps_securite])
         self.organise_sections()
@@ -180,7 +140,6 @@ class Route(object):
             self.flux_active = False
 
     def desactiver_densite(self):
->>>>>>> axelsauvage/master
         if self.temps_total == 0:
             self.densite_active = False
 
@@ -205,15 +164,10 @@ class Route(object):
                         voiture_devant = self.voitures_valides[0]
                     else:
                         voiture_devant = None
-<<<<<<< HEAD
                 #Mise a jour de la voiture
                 indice_section = self.numero_section(voiture.position)
                 voiture.update(temps_total, self.delta, indice, voiture_devant,
                                self.longueur, self.sections[indice_section][3], self.sections[indice_section][2])
-=======
-                indice_section = self.numero_section(voiture.position)
-                voiture.update(temps_total, delta, indice, voiture_devant, self.longueur, self.sections[indice_section][3], self.sections[indice_section][2])
->>>>>>> axelsauvage/master
 
         # On retire les voitures invalides de la simulation
         for voiture in self.voitures_valides:
@@ -325,6 +279,21 @@ class Route(object):
         ylim(0, max(Y)*1.2)
         show()
 
+    def afficher_positionn(self, indice):
+        try:
+            voiture = self.voitures[indice]
+        except:
+            print("Erreur ! Impossible de recuperer la voiture d'indice " + str(indice))
+            return None
+        i=1
+        T=[]
+        P=[]
+        for i in range(len(voiture.donnees)):
+            while est_positif(voiture.donnees[i][1][0] - voiture.donnees[i-1][1][0]):
+                T.append(voiture.donnees[i][0])
+                P.append(voiture.donnees[i][1][0])
+            plot(P,T)
+    
     def afficher_position(self, indice):
         try:
             voiture = self.voitures[indice]
@@ -382,7 +351,7 @@ class Route(object):
             nombre = self.N_tot
         print("Analyse des positions...")
         for i in range(nombre):
-            self.afficher_position(i)
+            self.afficher_positionn(i)
         self.afficher(0, self.longueur, 0, self.temps_total)
 
         """print("Analyse des distances relatives...")

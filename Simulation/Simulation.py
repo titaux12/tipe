@@ -40,36 +40,13 @@ class Simulation(object):
         print("Fin de la simulation")
 
         """ Lancement des analyses """
-<<<<<<< HEAD
-        self.route.analyse_voitures()
-        # self.route.animation()
-=======
-        self.route.analyse_voitures(nombre=1)
+        self.route.analyse_voitures(nombre=10)
         self.route.animation()
->>>>>>> axelsauvage/master
         # self.route.analyse_trafic()
         """ Fin des analyses """
         #self.route.sauvegarde()
         # Sauvegarde des données
-<<<<<<< HEAD
         print("Nombre de voiture",self.route.N_tot)
-        
-        print("Arrêt de la simulation")
-
-s = Simulation()
-s.route.sections[0]=[0,1000,25,2]
-s.route.sections.append([0,500,14,2.5])
-s.route.sections.append([0,300,9,1.5])
-s.route.sections.append([0,400,25,2])
-s.route.organise_sections()
-s.initialisation(400,30)
-s.lancer()
-"""for p in range(10, 1500, 50):
-    s.initialisation(p, 0)
-    s.lancer()
-"""
-=======
-        # self.route.sauvegarde()
 
         print("Arrêt de la simulation")
 
@@ -86,4 +63,3 @@ s.lancer()
 # for p in range(10, 1500, 50):
 #     s.initialisation(p, 0)
 #     s.lancer()
->>>>>>> axelsauvage/master
