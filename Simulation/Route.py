@@ -134,6 +134,13 @@ class Route(object):
             if position <= 0: # La voiture se situe alors dans la section numéro i
                 return i
         return 0
+    
+    """    
+    def num_sect(self, indice, position):
+        if position <= self.sections[indice][0] + self.sections[indice][1]:
+            return indice
+        else : return indice + 1
+    """
 
     def desactiver_flux(self):
         if self.temps_total == 0:
@@ -149,6 +156,9 @@ class Route(object):
         while p > 0:
             self.ajouter_voiture(p, vitesse)
             p -= distance
+        for voiture in self.voitures:
+            voiture.indice_section = self.numero_section(voiture.position)
+        
 
     def update(self, temps_total, indice):
 
