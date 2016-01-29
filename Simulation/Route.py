@@ -125,7 +125,7 @@ class Route(object):
         if self.temps_total == 0:
             self.densite_active = False
 
-    def generer_trafic(self, distance, vitesse):
+    def generer_trafic(self, distance, vitesse,mode="Normal",fct=0):
         """ Génération de voitures au début de la simulation """
         p = self.longueur
         while p > 0:

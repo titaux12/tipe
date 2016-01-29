@@ -2,7 +2,7 @@
 
 from random import uniform
 import numpy as np
-from Modele import Modele
+from Modele import *
 
 class Voiture(object):
 

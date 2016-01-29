@@ -1,4 +1,4 @@
-# coding: utf8
+ # coding: utf8
 
 from Route import *
 
@@ -42,7 +42,7 @@ class Simulation(object):
 
         """ Lancement des analyses """
         self.route.analyse_voitures(nombre=1)
-        self.route.animation()
+        #self.route.animation()
         # self.route.analyse_trafic()
         """ Fin des analyses """
 
