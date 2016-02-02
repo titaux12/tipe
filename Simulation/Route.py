@@ -1,6 +1,7 @@
 # coding: utf8
 
 from Voiture import *
+from Fonction import *
 from pylab import *
 from matplotlib import animation
 from datetime import *
@@ -8,9 +9,10 @@ import pickle
 import os
 
 
+
 class Route(object):
 
-    def __init__(self, longueur, vitesse_limite, delta):
+    def __init__(self, longueur, vitesse_limite, delta, FCT):
         self.longueur = longueur # Longueur de la route en mètre
         self.vitesse_limite = vitesse_limite # Vitesse maximale autorisée en m/s
 
@@ -18,7 +20,10 @@ class Route(object):
         self.voitures = [] # Liste contenant les voitures
         self.N_tot = 0 # Nombre de voitures sur la route
         self.N = 0 # Nombre de voitures sur la route valides
-
+        self.FCT=FCT #[["f(x)",longueur]...]
+                     #Attention : bien rentrer tableau de tableau
+                     #Fonction de répartition initiale (Par morceaux ou non)        
+        
         """ Tableau de données """
         self.flux = []
         self.densite = []
@@ -51,7 +56,7 @@ class Route(object):
 
         self.temps_total = 0
 
-        self.generer_trafic(espacement, vitesse)
+        self.generer_trafic()
 
     def ajouter_section(self, longueur, vitesse_limite, temps_securite, indice=0):
         self.sections.insert(indice, [0, longueur, vitesse_limite, temps_securite])
@@ -125,12 +130,13 @@ class Route(object):
         if self.temps_total == 0:
             self.densite_active = False
 
-    def generer_trafic(self, distance, vitesse,mode="Normal",fct=0):
-        """ Génération de voitures au début de la simulation """
-        p = self.longueur
-        while p > 0:
-            self.ajouter_voiture(p, vitesse)
-            p -= distance
+    def generer_trafic(self):
+        """FCT= voir Fonction(class)"""
+        alpha=Fonction(self.FCT)
+        P=alpha.position()
+        while P:
+            self.ajouter_voiture(P[0],self.sections[self.numero_section(P[0])][2])
+            P.pop(0)
 
     def update(self, delta, temps_total, indice):
 

@@ -7,7 +7,7 @@ class Simulation(object):
     def __init__(self):
         self.temps = 5*60.0 # Durée de la simulation en secondes
         self.delta = 1/5.0 # Intervalle de temps entre chaque calcul
-        self.route = Route(3000, 36, self.delta)
+        self.route = Route(3000, 36, self.delta,[["sin(x-1500)**2/5",3000]])
 
     def initialisation(self, espacement, vitesse):
         self.route.initialisation(espacement, vitesse)
@@ -41,7 +41,7 @@ class Simulation(object):
         print("Fin de la simulation")
 
         """ Lancement des analyses """
-        self.route.analyse_voitures(nombre=1)
+        self.route.analyse_voitures(nombre=5)
         #self.route.animation()
         # self.route.analyse_trafic()
         """ Fin des analyses """
@@ -53,7 +53,7 @@ class Simulation(object):
 
 s = Simulation()
 
-s.route.ajouter_section(2000, 25, 2)
+s.route.ajouter_section(200, 25, 2)
 s.route.ajouter_section(1000, 5, 2)
 s.route.ajouter_section(2000, 25, 2)
 s.route.affichage_section()
