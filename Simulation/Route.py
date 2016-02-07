@@ -39,7 +39,7 @@ class Route(object):
 
         self.sections = [] # [position, longueur, vitesse_limite, temps_securite]
 
-    def initialisation(self, espacement, vitesse):
+    def initialisation(self):
         self.voitures_valides = []
         self.voitures = []
         self.N_tot = 0

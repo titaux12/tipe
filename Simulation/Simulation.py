@@ -7,7 +7,7 @@ class Simulation(object):
     def __init__(self):
         self.temps = 5*60.0 # Durée de la simulation en secondes
         self.delta = 1/5.0 # Intervalle de temps entre chaque calcul
-        self.route = Route(3000, 36, self.delta,[["sin(x-1500)**2/5",3000]])
+        self.route = Route(3000, 36, self.delta,[["sin(x-1500)**2/2",1000]])
 
     def initialisation(self, espacement, vitesse):
         self.route.initialisation(espacement, vitesse)
@@ -58,7 +58,7 @@ s.route.ajouter_section(1000, 5, 2)
 s.route.ajouter_section(2000, 25, 2)
 s.route.affichage_section()
 
-s.initialisation(300, 25)
+s.initialisation()
 s.lancer()
 
 # for p in range(10, 1500, 50):
