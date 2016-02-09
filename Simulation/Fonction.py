@@ -89,9 +89,13 @@ class Fonction(object):
         return Min
     
     def credible(self):
+        if not self.entite:
+            self.initialisation(1)
         if not self.E:
             self.rep_ent()
-        if self.mini>self.analyse_rep() and max(self.E)==1:
+        if min(self.Y)<0:
+            return False
+        if self.mini < self.analyse_rep() and max(self.E)==1:
             return True
         else:
             return False
