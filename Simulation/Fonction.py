@@ -20,13 +20,14 @@ class Fonction(object):
         for i in range(len(FCT)):
             self.distance+= FCT[i][1]
         self.pas=pas
-        self.X=[]        
-        self.Y=[]        
+        self.X=[]   #Découpage de l'interval
+        self.Y=[]   #Valeur de la fonction
         self.entite=[]        #[[nombre d'entite,position en m],...]
-        self.mini=mini
-        self.E=[]
-        self.P=[]
-        self.F=[]
+        self.mini=mini  #Distance minimale à respecter entre entités
+        self.E=[]   #Nombre d'entités à P à indices identiques
+        self.P=[]   #Position des E à indices identiques
+        self.F=[]   #Position des entités (1 par position)
+        self.N=0    #Nombre d'entité
         
     def initialisation(self,R=0):
         self.X,self.Y=self.tableau()
@@ -117,6 +118,7 @@ class Fonction(object):
         for i in range(len(self.entite)):
             self.E+=[self.entite[i][0]]
             self.P+=[self.entite[i][1]]
+        self.N=sum(self.E)
     
     
 def affichage(X,Y):

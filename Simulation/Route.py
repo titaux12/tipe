@@ -14,7 +14,7 @@ class Route(object):
 
     def __init__(self, longueur, vitesse_limite, delta, FCT):
         self.longueur = longueur # Longueur de la route en mètre
-        self.vitesse_limite = vitesse_limite # Vitesse maximale autorisée en m/s
+        self.vitesse_limite = vitesse_limite # Vitesse maximale autorisée en m/s sur toute section ! "vitesse limite suprême"
 
         self.voitures_valides = [] # Liste contenant les voitures valides
         self.voitures = [] # Liste contenant les voitures
@@ -39,7 +39,7 @@ class Route(object):
 
         self.sections = [] # [position, longueur, vitesse_limite, temps_securite]
 
-    def initialisation(self):
+    def initialisation(self):   #À effectuer après ajout de toutes les sections
         self.voitures_valides = []
         self.voitures = []
         self.N_tot = 0
@@ -134,6 +134,8 @@ class Route(object):
         """FCT= voir Fonction(class)"""
         alpha=Fonction(self.FCT)
         P=alpha.position()
+        
+        
         while P:
             self.ajouter_voiture(P[0],self.sections[self.numero_section(P[0])][2])
             P.pop(0)
