@@ -37,7 +37,7 @@ class Simulation(object):
         if not densite:
             self.route.desactiver_densite()
 
-    def lancer(self):
+    def lancer(self,Oafficher = True):
         """
         Début de la simulation
         """
@@ -61,11 +61,12 @@ class Simulation(object):
                 i -= 0.01
                 print("Avancement de la simulation : " + str(round(p*100)) + "% (" + str(round(temps_total)) + "s de " + str(self.temps) + "s).")
         print("Fin de la simulation")
-
+        rep="o"
         if not self.analyse:
             """ Début des analyses """
-            rep = str(input("Analyse de la simulation ? (1/0)"))
-            if rep == '1':
+            if not Oafficher: #Si il n'y a pas obligation d'afficher
+                rep = str(input("Analyse de la simulation ? (1/0)"))
+            if rep == '1' or Oafficher:
                 self.route.analyse_voitures()
                 #self.route.animation()
                 self.route.analyse_trafic()
